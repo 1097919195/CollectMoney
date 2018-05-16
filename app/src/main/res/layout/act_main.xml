@@ -31,7 +31,43 @@
                     android:textColor="@color/colorPrimary"
                     android:padding="5dp"
                     android:text="轻触选择会员"/>
-                <TextView
+                <LinearLayout
+                    android:paddingRight="30dp"
+                    android:paddingLeft="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_preference_normal"
+                    android:orientation="horizontal"
+                    android:paddingTop="5dp">
+
+                    <TextView
+                        android:gravity="center"
+                        android:text="品名"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"/>
+                    <TextView
+                        android:gravity="center"
+                        android:text="数量"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:gravity="center"
+                        android:text="单价"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:gravity="center"
+                        android:text="小计"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/productDetailIrc"
                     android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="400dp"
