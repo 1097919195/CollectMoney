@@ -5,6 +5,8 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import com.aspsine.irecyclerview.IRecyclerView;
 import com.aspsine.irecyclerview.universaladapter.ViewHolderHelper;
 import com.aspsine.irecyclerview.universaladapter.recyclerview.CommonRecycleViewAdapter;
+import com.aspsine.irecyclerview.universaladapter.recyclerview.OnItemClickListener;
 import com.example.collect.collectmoneysystem.R;
 import com.example.collect.collectmoneysystem.adapter.CalculatorAdapter;
 import com.example.collect.collectmoneysystem.app.AppApplication;
@@ -28,6 +31,8 @@ import butterknife.BindView;
 
  public class MainActivity extends BaseActivity {
 
+     @BindView(R.id.commitNum)
+     Button commitNum;
      @BindView(R.id.productDetailIrc)
      RecyclerView productDetailIrc;
      @BindView(R.id.clearAll)
@@ -109,12 +114,28 @@ import butterknife.BindView;
 //         divider.setDrawable(ContextCompat.getDrawable(this,R.drawable.custom_divider));
 //         productDetailIrc.addItemDecoration(divider);
 
+         productAdapter.setOnItemClickListener(new OnItemClickListener() {
+             @Override
+             public void onItemClick(ViewGroup parent, View view, Object o, int position) {
+                 ToastUtil.showShort(String.valueOf(position));
+             }
+
+             @Override
+             public boolean onItemLongClick(ViewGroup parent, View view, Object o, int position) {
+                 return false;
+             }
+         });
+
      }
 
      private void initListener() {
          clearAll.setOnClickListener(v->{
              getAmount.setText("0");
              });
+
+         commitNum.setOnClickListener(v->{
+             startActivity(TestActivity.class);
+         });
      }
 
      private void initCalculator() {
