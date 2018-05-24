@@ -26,9 +26,10 @@
                 android:gravity="center"
                 android:textColor="@color/black"/>
             <TextView
+                android:id="@+id/final_fact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="520.00"
+                android:text="0"
                 android:textSize="@dimen/item_text_size_30"
                 android:gravity="center"
                 android:textColor="@color/black"/>
@@ -53,9 +54,10 @@
                 android:gravity="center"
                 android:textColor="@color/black"/>
             <TextView
+                android:id="@+id/final_totals"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="520.00"
+                android:text="0"
                 android:textSize="@dimen/item_text_size_30"
                 android:gravity="center"
                 android:textColor="@color/black"/>
@@ -81,9 +83,10 @@
                 android:gravity="center"
                 android:textColor="@color/orange"/>
             <TextView
+                android:id="@+id/oddChange"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="0.00"
+                android:text="0"
                 android:textSize="@dimen/item_text_size_30"
                 android:gravity="center"
                 android:textColor="@color/orange"/>

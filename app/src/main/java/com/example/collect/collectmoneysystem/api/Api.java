@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 
+
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.utils.exception.ApiException;
 import com.example.collect.collectmoneysystem.utils.exception.TimeoutException;
@@ -17,7 +18,6 @@ import com.jaydenxiao.common.commonutils.NetWorkUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
 
 import io.reactivex.functions.Function;
 import okhttp3.Cache;
@@ -105,7 +105,6 @@ public class Api {
                 Request build = chain.request().newBuilder()
                         //使用 addHeader(name, value) 方法来为 HTTP 头添加新的值
                         .addHeader("Content-Type", "application/json")//Content-Type向接收方指示实体的介质类型，指定HEAD方法送到接收方的实体介质类型，或GET方法发送的请求介质类型
-                        .addHeader("Accept", "application/json")
                         .build();
                 return chain.proceed(build);
             }
@@ -232,8 +231,8 @@ public class Api {
             }
             if (status == 200) {
                 data = httpResponse.getData();
+                return data;
             }
-//            return data;//统一处理但是不利于指向对应的错误类型
             return httpResponse.getData();
         }
     }

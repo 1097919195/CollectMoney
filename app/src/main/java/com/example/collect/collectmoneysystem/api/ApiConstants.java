@@ -17,9 +17,9 @@
 package com.example.collect.collectmoneysystem.api;
 
 public class ApiConstants {
-    public static final String SINA_PHOTO_HOST = "http://gank.io/api/";
     public static final String QUALITY_HOST_TEST = "http://rap2api.taobao.org/app/mock/8690/";
-    public static final String QUALITY_HOST = "http://www.npclo.com/";
+//    public static final String QUALITY_HOST = "https://www.npclo.com/";
+    public static final String QUALITY_HOST = "https://test.npclo.com/";
 
     /**
      * 获取对应的host
@@ -35,9 +35,6 @@ public class ApiConstants {
                 break;
             case HostType.QUALITY_DATA:
                 host = QUALITY_HOST;
-                break;
-            case HostType.PHOTO:
-                host = SINA_PHOTO_HOST;
                 break;
             default:
                 host = "";

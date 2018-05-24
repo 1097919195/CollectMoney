@@ -59,12 +59,12 @@ public class TestActivity extends BaseActivity implements OnRefreshListener, OnL
     }
 
     private void initAdapter() {
-        details1.setPart("123asdf123dsf56asd1f23sd1f3asadffff");
-        details2.setPart("123asdfasaa");
-        details3.setPart("123asdfasaaasdfasdfsd");
-        details4.setPart("123asdfasaa");
-        details5.setPart("123asdfasaaasadf");
-        details6.setPart("123asdfasaaasdfsdfsdfsdfasdfasdfasdfsdfsd");
+//        details1.setPart("123asdf123dsf56asd1f23sd1f3asadffff");
+//        details2.setPart("123asdfasaa");
+//        details3.setPart("123asdfasaaasdfasdfsd");
+//        details4.setPart("123asdfasaa");
+//        details5.setPart("123asdfasaaasadf");
+//        details6.setPart("123asdfasaaasdfsdfsdfsdfasdfasdfasdfsdfsd");
         productDetails.add(details1);
         productDetails.add(details2);
         productDetails.add(details3);
@@ -78,14 +78,14 @@ public class TestActivity extends BaseActivity implements OnRefreshListener, OnL
             @Override
             public void convert(ViewHolderHelper helper, ProductDetails productDetails) {
                 TextView part = helper.getView(R.id.part);
-                TextView count = helper.getView(R.id.count);
+                TextView spec = helper.getView(R.id.spec);
+                TextView size = helper.getView(R.id.size);
                 TextView price = helper.getView(R.id.price);
-                TextView total = helper.getView(R.id.total);
 
-                part.setText(productDetails.getPart());
-                count.setText(String.valueOf(productDetails.getCount()));
-                price.setText(String.valueOf(productDetails.getPrice()));
-                total.setText(String.valueOf(productDetails.getTotal()));
+//                part.setText(productDetails.getPart());
+//                count.setText(String.valueOf(productDetails.getCount()));
+//                price.setText(String.valueOf(productDetails.getPrice()));
+//                total.setText(String.valueOf(productDetails.getTotal()));
             }
         };
 

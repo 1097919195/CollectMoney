@@ -1,8 +1,8 @@
 package com.example.collect.collectmoneysystem.api;
 
 
-import java.util.List;
-
+import com.example.collect.collectmoneysystem.bean.HttpResponse;
+import com.example.collect.collectmoneysystem.bean.ProductDetails;
 
 import io.reactivex.Observable;
 import retrofit2.http.Field;
@@ -80,27 +80,26 @@ public interface ApiService {
 //    @FormUrlEncoded
 //    @POST("clo/compare")
 //    Observable<RetQuality> getUpLoadAfterChecked(
-//            @Field("list") List<QualityData.Parts> qualityDataList
+//            @Field("list") Object[][] qualityDataList
 //    );
 
     /**
-     *Release Api
+     * Release Api
      */
 
+//    //质检项目
 //    @GET("api/qc/itemsingle/{id}")
 //    Observable<HttpResponse<QualityData>> getQuality(
 //            @Path("id") String id
 //    );
-
-//    @FormUrlEncoded
-//    @POST("api/third/mac_checks")
-//    Observable<HttpResponse> getUpLoadAfterChecked(
-//            @Field("name") String customer,
-//            @Field("mac_address") String macAddress
-//    );
 //
-//    @GET("api/third/mac_checks")
-//    Observable<HttpResponse> getFuzzySearch(
-//            @Query("name") String name
-//    );
+
+
+    //获取成衣详情
+    @FormUrlEncoded
+    @POST("api/cards/get_clothes")
+    Observable<HttpResponse<ProductDetails>> getProductDetails(
+            @Field("card_num") String num
+    );
+
 }

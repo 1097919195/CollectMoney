@@ -5,6 +5,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.aspsine.irecyclerview.IRecyclerView;
 import com.aspsine.irecyclerview.universaladapter.ViewHolderHelper;
 import com.aspsine.irecyclerview.universaladapter.recyclerview.CommonRecycleViewAdapter;
@@ -19,17 +21,25 @@ import com.aspsine.irecyclerview.universaladapter.recyclerview.OnItemClickListen
 import com.example.collect.collectmoneysystem.R;
 import com.example.collect.collectmoneysystem.adapter.CalculatorAdapter;
 import com.example.collect.collectmoneysystem.app.AppApplication;
+import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
+import com.example.collect.collectmoneysystem.contract.MainContract;
+import com.example.collect.collectmoneysystem.model.MainModel;
+import com.example.collect.collectmoneysystem.presenter.MainPresenter;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jaydenxiao.common.base.BaseActivity;
+import com.jaydenxiao.common.commonutils.LogUtils;
 import com.jaydenxiao.common.commonutils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import io.reactivex.functions.Consumer;
 
- public class MainActivity extends BaseActivity {
+ public class MainActivity extends BaseActivity<MainPresenter,MainModel> implements MainContract.View {
 
      @BindView(R.id.commitNum)
      Button commitNum;
@@ -45,17 +55,34 @@ import butterknife.BindView;
      List<String> num = Arrays.asList(AppApplication.getAppContext().getResources().getStringArray(R.array.Ca_num));
      List<String> type = Arrays.asList(AppApplication.getAppContext().getResources().getStringArray(R.array.Ca_type));
 
-     ProductDetails details1 = new ProductDetails();
-     ProductDetails details2 = new ProductDetails();
-     ProductDetails details3 = new ProductDetails();
-     ProductDetails details4 = new ProductDetails();
-     ProductDetails details5 = new ProductDetails();
-     ProductDetails details6 = new ProductDetails();
-     ProductDetails details7 = new ProductDetails();
-     ProductDetails details8 = new ProductDetails();
-     ProductDetails details9 = new ProductDetails();
-     List<ProductDetails> productDetails = new ArrayList<>();
+     @BindView(R.id.add_goods)
+     Button addGoods;
+     @BindView(R.id.goods_clear)
+     TextView goods_clear;
+     @BindView(R.id.goods_counts)
+     TextView goodsCounts;
+     @BindView(R.id.goods_totals)
+     TextView goodsTotals;
+     @BindView(R.id.discount)
+     TextView discount;
+     @BindView(R.id.receivable)
+     TextView receivable;
+
+     @BindView(R.id.final_fact)
+     TextView final_fact;
+     @BindView(R.id.final_totals)
+     TextView final_totals;
+     @BindView(R.id.oddChange)
+     TextView oddChange;
+
+
+     List<ProductDetails> productDetailsList = new ArrayList<>();
      CommonRecycleViewAdapter<ProductDetails> productAdapter;
+
+     float factPrice = 0;
+     float finalPrice = 0;
+
+     MaterialDialog delateDialog;
 
      @Override
      public int getLayoutId() {
@@ -64,45 +91,31 @@ import butterknife.BindView;
 
      @Override
      public void initPresenter() {
-
+         mPresenter.setVM(this , mModel);
      }
 
      @Override
      public void initView() {
          getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);// 设置全屏
+         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);//底部导航栏覆盖activity
          initCalculator();
          initListener();
          initProductDetails();
      }
 
      private void initProductDetails() {
-         details1.setPart("123asdf123dsf56asd1f23sd1f3asadffff");
-         details2.setPart("123asdfasaa");
-         details3.setPart("123asdfasaaasdfasdfsd");
-         details4.setPart("123asdfasaa");
-         details5.setPart("123asdfasaaasadf");
-         details6.setPart("123asdfasaaasdfsdfsdfsdfasdfasdfasdfsdfsd");
-         productDetails.add(details1);
-         productDetails.add(details2);
-         productDetails.add(details3);
-         productDetails.add(details4);
-         productDetails.add(details5);
-         productDetails.add(details6);
-         productDetails.add(details7);
-         productDetails.add(details8);
-         productDetails.add(details9);
-         productAdapter = new CommonRecycleViewAdapter<ProductDetails>(mContext,R.layout.item_product_details,productDetails) {
+         productAdapter = new CommonRecycleViewAdapter<ProductDetails>(mContext,R.layout.item_product_details,productDetailsList) {
              @Override
              public void convert(ViewHolderHelper helper, ProductDetails productDetails) {
                  TextView part = helper.getView(R.id.part);
-                 TextView count = helper.getView(R.id.count);
+                 TextView spec = helper.getView(R.id.spec);
+                 TextView size = helper.getView(R.id.size);
                  TextView price = helper.getView(R.id.price);
-                 TextView total = helper.getView(R.id.total);
 
-                 part.setText(productDetails.getPart());
-                 count.setText(String.valueOf(productDetails.getCount()));
-                 price.setText(String.valueOf(productDetails.getPrice()));
-                 total.setText(String.valueOf(productDetails.getTotal()));
+                 part.setText(productDetails.getName());
+                 spec.setText(productDetails.getSpec());
+                 size.setText(productDetails.getSize());
+                 price.setText(String.valueOf(productDetails.getRetailPrice()));
              }
          };
 
@@ -122,6 +135,27 @@ import butterknife.BindView;
 
              @Override
              public boolean onItemLongClick(ViewGroup parent, View view, Object o, int position) {
+
+                 delateDialog = new MaterialDialog.Builder(MainActivity.this)
+                         .title("是否删除该商品？")
+                         .backgroundColor(getResources().getColor(R.color.white))
+                         .positiveText("确认")
+                         .negativeText("取消")
+                         .onPositive((dialog, which) -> {
+                             factPrice = factPrice - productDetailsList.get(position).getRetailPrice();
+                             productDetailsList.remove(position);
+                             productAdapter.notifyDataSetChanged();
+
+                             goodsCounts.setText(String.valueOf(productDetailsList.size()));
+                             goodsTotals.setText(String.valueOf(factPrice));
+                             finalPrice = factPrice * 9 / 10;
+                             receivable.setText(String.valueOf(finalPrice));
+                             final_fact.setText(String.valueOf(finalPrice));
+                         })
+                         .negativeColor(getResources().getColor(R.color.red))
+                         .build();
+                 delateDialog.show();
+
                  return false;
              }
          });
@@ -131,11 +165,71 @@ import butterknife.BindView;
      private void initListener() {
          clearAll.setOnClickListener(v->{
              getAmount.setText("0");
-             });
+         });
 
          commitNum.setOnClickListener(v->{
-             startActivity(TestActivity.class);
+//             startActivity(TestActivity.class);
          });
+
+         addGoods.setOnClickListener(v ->
+                 mPresenter.getProductDetailsRequest("2770769178")
+         );
+
+         goods_clear.setOnClickListener(v -> {
+             productDetailsList.clear();
+             productAdapter.notifyDataSetChanged();
+             goodsCounts.setText("");
+             factPrice = 0;
+             finalPrice = 0;
+             goodsTotals.setText("");
+             receivable.setText("");
+             final_fact.setText("0.0");
+         });
+
+         RxTextView.textChanges(final_fact)
+                 .debounce( 100 , TimeUnit.MILLISECONDS )
+                 .subscribe(new Consumer<Object>() {
+                     @Override
+                     public void accept(Object o) throws Exception {
+                         final_totals.post(new Runnable() {
+                             @Override
+                             public void run() {
+                                 final_totals.setText(String.valueOf(Float.parseFloat(getAmount.getText().toString())));
+                             }
+                         });
+
+                         oddChange.post(new Runnable() {
+                             @Override
+                             public void run() {
+                                 float number = (Float.parseFloat(getAmount.getText().toString()) - finalPrice);
+                                 oddChange.setText(String.valueOf((float) (Math.round(number * 100)) / 100));
+                             }
+                         });
+                     }
+                 });
+
+         RxTextView.textChanges(getAmount)
+                 .debounce( 100 , TimeUnit.MILLISECONDS )
+                 .subscribe(new Consumer<Object>() {
+                     @Override
+                     public void accept(Object o) throws Exception {
+                         final_totals.post(new Runnable() {
+                             @Override
+                             public void run() {
+                                 final_totals.setText(String.valueOf(Float.parseFloat(getAmount.getText().toString())));
+                             }
+                         });
+
+                         oddChange.post(new Runnable() {
+                             @Override
+                             public void run() {
+                                 float number = (Float.parseFloat(getAmount.getText().toString()) - finalPrice);
+                                 oddChange.setText(String.valueOf((float) (Math.round(number * 100)) / 100));
+                             }
+                         });
+                     }
+                 });
+
      }
 
      private void initCalculator() {
@@ -173,5 +267,36 @@ import butterknife.BindView;
              }
 
          });
+     }
+
+     //返回获取的成衣情况
+     @Override
+     public void returnGetProductDetails(ProductDetails productDetails) {
+         ToastUtil.showShort("OK");
+         productDetailsList.add(productDetails);
+         productAdapter.notifyDataSetChanged();
+
+         goodsCounts.setText(String.valueOf(productDetailsList.size()));
+         factPrice = factPrice + productDetails.getRetailPrice();
+         goodsTotals.setText(String.valueOf(factPrice));
+         discount.setText("9");
+         finalPrice = factPrice * 9 / 10;
+         receivable.setText(String.valueOf(finalPrice));
+         final_fact.setText(String.valueOf(finalPrice));
+     }
+
+     @Override
+     public void showLoading(String title) {
+
+     }
+
+     @Override
+     public void stopLoading() {
+
+     }
+
+     @Override
+     public void showErrorTip(String msg) {
+         ToastUtil.showShort(msg);
      }
  }
