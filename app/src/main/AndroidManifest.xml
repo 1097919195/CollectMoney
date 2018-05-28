@@ -58,6 +58,7 @@
         </activity>
 
         <activity android:name=".activity.TestActivity" />
+        <activity android:name="com.example.collect.collectmoneysystem.camera.CaptureActivity" />
     </application>
 
 </manifest>

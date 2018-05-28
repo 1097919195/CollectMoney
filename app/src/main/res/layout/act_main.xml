@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:notButton="http://schemas.android.com/apk/res-auto"
     android:background="@color/toast_stroke_gray"
     tools:context="com.example.collect.collectmoneysystem.activity.MainActivity">
 
@@ -12,75 +13,84 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_marginTop="10dp"
             android:layout_width="0dp"
-            android:layout_weight="0.8"
             android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0.8"
             android:orientation="vertical">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="9"
                 android:orientation="vertical">
+
                 <TextView
-                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/ic_preference_first_normal"
-                    android:textSize="@dimen/item_text_size_25"
-                    android:textColor="@color/colorPrimary"
+                    android:gravity="center"
                     android:padding="5dp"
-                    android:text="轻触选择会员"/>
+                    android:text="轻触选择会员"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/item_text_size_25" />
+
                 <LinearLayout
-                    android:paddingRight="30dp"
-                    android:paddingLeft="30dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/ic_preference_normal"
                     android:orientation="horizontal"
+                    android:paddingLeft="30dp"
+                    android:paddingRight="30dp"
                     android:paddingTop="5dp">
 
                     <TextView
-                        android:gravity="center"
-                        android:text="品名"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"/>
+                        android:layout_weight="2"
+                        android:gravity="center"
+                        android:text="品名" />
+
                     <TextView
-                        android:gravity="center"
-                        android:text="规格"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="规格" />
+
                     <TextView
-                        android:gravity="center"
-                        android:text="码号"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="码号" />
+
                     <TextView
-                        android:gravity="center"
-                        android:text="单价"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="单价" />
 
                 </LinearLayout>
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/productDetailIrc"
-                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="400dp"
                     android:background="@drawable/ic_preference_normal"
+                    android:gravity="center"
                     android:text="deasdf"
-                    android:textSize="@dimen/item_text_size_20"/>
+                    android:textSize="@dimen/item_text_size_20" />
+
                 <LinearLayout
-                    android:background="@drawable/btn_white"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginEnd="14dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginStart="14dp"
+                    android:background="@drawable/btn_white"
                     android:orientation="horizontal">
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -91,160 +101,192 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
+
                             <TextView
-                                android:padding="10dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="总数："
-                                />
+                                android:padding="10dp"
+                                android:text="总数：" />
+
                             <TextView
                                 android:id="@+id/goods_counts"
-                                android:padding="10dp"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content" />
+                                android:layout_height="wrap_content"
+                                android:padding="10dp" />
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
+
                             <TextView
-                                android:padding="10dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="折扣："
-                                />
+                                android:padding="10dp"
+                                android:text="折扣：" />
+
                             <TextView
                                 android:id="@+id/discount"
-                                android:padding="10dp"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content" />
+                                android:layout_height="wrap_content"
+                                android:padding="10dp" />
                         </LinearLayout>
 
 
-
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
+
                             <TextView
-                                android:padding="10dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="合计："
-                                />
+                                android:padding="10dp"
+                                android:text="合计：" />
+
                             <TextView
                                 android:id="@+id/goods_totals"
-                                android:padding="10dp"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content" />
+                                android:layout_height="wrap_content"
+                                android:padding="10dp" />
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
+
                             <TextView
-                                android:padding="10dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="应收："
-                                />
+                                android:padding="10dp"
+                                android:text="应收：" />
+
                             <TextView
                                 android:id="@+id/receivable"
-                                android:padding="10dp"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content" />
+                                android:layout_height="wrap_content"
+                                android:padding="10dp" />
                         </LinearLayout>
 
                     </LinearLayout>
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/goods_clear"
-                        android:layout_marginLeft="14dp"
-                        android:gravity="center"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="14dp"
+                        android:layout_weight="1"
                         android:background="@drawable/btn_white"
-                        android:text="清空商品"
-                        android:textSize="@dimen/item_text_size_25"
+                        android:gravity="center"
                         android:padding="10dp"
-                        android:textColor="@color/red"/>
+                        android:text="清空商品"
+                        android:textColor="@color/red"
+                        android:textSize="@dimen/item_text_size_25" />
+
                     <TextView
                         android:id="@+id/register_account"
-                        android:layout_marginRight="14dp"
-                        android:gravity="center"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_marginRight="14dp"
+                        android:layout_weight="1"
                         android:background="@drawable/btn_white"
-                        android:text="挂单"
+                        android:gravity="center"
                         android:padding="10dp"
-                        android:textSize="@dimen/item_text_size_25"
-                        android:textColor="@color/colorPrimary"/>
+                        android:text="挂单"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/item_text_size_25" />
                 </LinearLayout>
             </LinearLayout>
-            
+
             <RelativeLayout
+                android:layout_marginBottom="-5dp"
                 android:layout_width="match_parent"
-                android:layout_height="80dp">
+                android:layout_height="100dp"
+                android:layout_marginStart="16dp">
 
                 <Button
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="5dp"
                     android:id="@+id/scan_add_goods"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:layout_marginStart="16dp"
                     android:background="@drawable/btn_white"
                     android:padding="10dp"
                     android:text="扫码添加"
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/item_text_size_25" />
+
                 <Button
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="5dp"
                     android:id="@+id/add_goods"
-                    android:layout_toRightOf="@+id/scan_add_goods"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginStart="14dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@+id/scan_add_goods"
                     android:background="@drawable/btn_white"
+                    android:padding="10dp"
                     android:text="刷卡添加"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/item_text_size_25"
-                    android:padding="10dp"/>
-                <Button
+                    android:textSize="@dimen/item_text_size_25" />
+
+                <com.carlos.notificatoinbutton.library.NotificationButton
                     android:id="@+id/register_account_details"
-                    android:layout_marginEnd="14dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginStart="14dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
                     android:background="@drawable/btn_light_blue"
+                    android:padding="10dp"
                     android:text="查看挂单情况"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/item_text_size_25"
-                    android:padding="10dp"/>
+                    android:textSize="@dimen/item_text_size_30"
+                    notButton:circleSize="12dp"  />
+                <!--<Button-->
+                    <!--android:id="@+id/register_account_details"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_alignParentRight="true"-->
+                    <!--android:background="@drawable/btn_light_blue"-->
+                    <!--android:padding="10dp"-->
+                    <!--android:text="查看挂单情况"-->
+                    <!--android:textColor="@color/white"-->
+                    <!--android:textSize="@dimen/item_text_size_25" />-->
+
+                <!--<TextView-->
+                    <!--android:layout_alignParentRight="true"-->
+                    <!--android:id="@+id/msg_status"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:background="@drawable/msg_circle_red"-->
+                    <!--android:text="9" />-->
+
             </RelativeLayout>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
             <include layout="@layout/layout_main_right" />
         </LinearLayout>

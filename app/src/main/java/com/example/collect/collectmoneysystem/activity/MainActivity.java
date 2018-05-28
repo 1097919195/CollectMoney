@@ -7,6 +7,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.media.Image;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
@@ -29,12 +30,14 @@ import com.aspsine.irecyclerview.IRecyclerView;
 import com.aspsine.irecyclerview.universaladapter.ViewHolderHelper;
 import com.aspsine.irecyclerview.universaladapter.recyclerview.CommonRecycleViewAdapter;
 import com.aspsine.irecyclerview.universaladapter.recyclerview.OnItemClickListener;
+import com.carlos.notificatoinbutton.library.NotificationButton;
 import com.example.collect.collectmoneysystem.R;
 import com.example.collect.collectmoneysystem.adapter.CalculatorAdapter;
 import com.example.collect.collectmoneysystem.app.AppApplication;
 import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
+import com.example.collect.collectmoneysystem.camera.CaptureActivity;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.example.collect.collectmoneysystem.model.MainModel;
 import com.example.collect.collectmoneysystem.presenter.MainPresenter;
@@ -44,6 +47,8 @@ import com.jaydenxiao.common.baserx.RxBus2;
 import com.jaydenxiao.common.commonutils.ImageLoaderUtils;
 import com.jaydenxiao.common.commonutils.LogUtils;
 import com.jaydenxiao.common.commonutils.ToastUtil;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -120,6 +125,10 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
      TextView oddChange;
      @BindView(R.id.scan_add_goods)
      Button scan_add_goods;
+     @BindView(R.id.register_account)
+     TextView register_account;
+     @BindView(R.id.register_account_details)
+     NotificationButton notificationButton;
 
 
      List<ProductDetails> productDetailsList = new ArrayList<>();
@@ -128,8 +137,12 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
      float factPrice = 0;
      float finalPrice = 0;
      float associatorDiscount = 10;
+     int registerCount = 0;
 
      MaterialDialog delateDialog;
+     public static final int REQUEST_CODE_SAMPLE = 1201;
+     private static final int SCAN_HINT = 1001;
+     private static final int CODE_HINT = 1002;
 
      @Override
      public int getLayoutId() {
@@ -234,6 +247,10 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
      private void initListener() {
          clearAll.setOnClickListener(v->{
              getAmount.setText("0");
+//             if (registerCount != 0) {
+//                 registerCount = registerCount - 1;
+//                 notificationButton.setNotificationNumber(registerCount);
+//             }
          });
 
          commitNum.setOnClickListener(v->{
@@ -255,10 +272,20 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
              final_fact.setText("0.0");
          });
 
+         register_account.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 registerCount = registerCount + 1;
+                 notificationButton.setNotificationNumber(registerCount);
+             }
+         });
+
          scan_add_goods.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 mPresenter.getProductDetailsWithScanRequest("http://weixin.qq.com/q/02gJC4lIIAdW210000g07x");
+                 Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+                 startActivityForResult(intent,REQUEST_CODE_SAMPLE);
+//                 mPresenter.getProductDetailsWithScanRequest("http://weixin.qq.com/q/02gJC4lIIAdW210000g07x");
              }
          });
 
@@ -577,8 +604,36 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
      public void addLog(String strLog) {
      }
 
+     @Override
+     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+         super.onActivityResult(requestCode, resultCode, data);
+         if (requestCode == REQUEST_CODE_SAMPLE) {
+             if (data != null) {
+                 Bundle bundle = data.getExtras();
+                 String result = bundle.getString("result");
+                 switch (resultCode) {
+                     case SCAN_HINT:
+                         if (result != null) {
+                             LogUtils.loge("二维码解析====" + result);
+                             if (result.contains("http")) {
+                                 mPresenter.getProductDetailsWithScanRequest("http://weixin.qq.com/q/02gJC4lIIAdW210000g07x");
+                             }else {
+                                 mPresenter.getProductDetailsWithScanRequest("http://weixin.qq.com/q/02gJC4lIIAdW210000g07x");
+                             }
+                         } else {
+                             ToastUtil.showShort(getString(R.string.scan_qrcode_failed));
+                         }
+                         break;
+                     case CODE_HINT:
+                         break;
+                     default:
+                         break;
+                 }
+             }
+         }
+     }
 
-     //返回获取的成衣情况
+     //返回根据刷卡获取的成衣情况
      @Override
      public void returnGetProductDetails(ProductDetails productDetails) {
          flag = true;
@@ -595,6 +650,7 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
          final_fact.setText(String.valueOf(finalPrice));
      }
 
+     //返回根据扫二维码获取的成衣情况
      @Override
      public void returnGetProductDetailsWithScan(ProductDetails productDetails) {
          ToastUtil.showShort("OK");

@@ -51,4 +51,5 @@ dependencies {
     implementation project(':library:common')
     implementation project(':library:irecyclerview')
     implementation files('src/main/jniLibs/usc.jar')
+    compile 'com.carlos.notificatoinbutton:buttonlibrary:1.0.5'
 }
