@@ -15,13 +15,19 @@ import io.reactivex.Observable;
 public interface MainContract {
     interface Model extends BaseModel {
         Observable<ProductDetails> getProductDetails(String num);
+
+        Observable<ProductDetails> getProductDetailsWithScan(String content);
     }
 
     interface View extends BaseView{
         void returnGetProductDetails(ProductDetails productDetails);
+
+        void returnGetProductDetailsWithScan(ProductDetails productDetails);
     }
 
     abstract class Presenter extends BasePresenter<View, Model> {
         public abstract void getProductDetailsRequest(String num);
+
+        public abstract void getProductDetailsWithScanRequest(String content);
     }
 }

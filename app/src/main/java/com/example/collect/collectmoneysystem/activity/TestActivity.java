@@ -40,7 +40,6 @@ public class TestActivity extends BaseActivity implements OnRefreshListener, OnL
     ProductDetails details6 = new ProductDetails();
     ProductDetails details7 = new ProductDetails();
     ProductDetails details8 = new ProductDetails();
-    ProductDetails details9 = new ProductDetails();
     List<ProductDetails> productDetails = new ArrayList<>();
     CommonRecycleViewAdapter<ProductDetails> productAdapter;
     @Override
@@ -59,12 +58,14 @@ public class TestActivity extends BaseActivity implements OnRefreshListener, OnL
     }
 
     private void initAdapter() {
-//        details1.setPart("123asdf123dsf56asd1f23sd1f3asadffff");
-//        details2.setPart("123asdfasaa");
-//        details3.setPart("123asdfasaaasdfasdfsd");
-//        details4.setPart("123asdfasaa");
-//        details5.setPart("123asdfasaaasadf");
-//        details6.setPart("123asdfasaaasdfsdfsdfsdfasdfasdfasdfsdfsd");
+        details1.setName("123asdf123dsf56asd1f23sd1f3asadffff");
+        details2.setName("123asdfasaa");
+        details3.setName("123asdfasaaasdfasdfsd");
+        details4.setName("123asdfasaa");
+        details5.setName("123asdfasaaasadf");
+        details6.setName("qwqe");
+        details7.setName("dfdasfsdwe");
+        details8.setName("asdfasd");
         productDetails.add(details1);
         productDetails.add(details2);
         productDetails.add(details3);
@@ -73,7 +74,6 @@ public class TestActivity extends BaseActivity implements OnRefreshListener, OnL
         productDetails.add(details6);
         productDetails.add(details7);
         productDetails.add(details8);
-        productDetails.add(details9);
         productAdapter = new CommonRecycleViewAdapter<ProductDetails>(mContext,R.layout.item_product_details,productDetails) {
             @Override
             public void convert(ViewHolderHelper helper, ProductDetails productDetails) {
@@ -82,10 +82,14 @@ public class TestActivity extends BaseActivity implements OnRefreshListener, OnL
                 TextView size = helper.getView(R.id.size);
                 TextView price = helper.getView(R.id.price);
 
-//                part.setText(productDetails.getPart());
-//                count.setText(String.valueOf(productDetails.getCount()));
-//                price.setText(String.valueOf(productDetails.getPrice()));
-//                total.setText(String.valueOf(productDetails.getTotal()));
+                part.setText(productDetails.getName());
+
+                helper.setOnClickListener(R.id.ll_container, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ToastUtil.showShort(productDetails.getName());
+                    }
+                });
             }
         };
 
@@ -100,17 +104,18 @@ public class TestActivity extends BaseActivity implements OnRefreshListener, OnL
         testIrc.setOnLoadMoreListener(this);
         testIrc.setOnRefreshListener(this);
 
-        productAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(ViewGroup parent, View view, Object o, int position) {
-                ToastUtil.showShort(String.valueOf(position));
-            }
-
-            @Override
-            public boolean onItemLongClick(ViewGroup parent, View view, Object o, int position) {
-                return false;
-            }
-        });
+        //需要改变接口返回的position的值，不然会造成越界，可用holder点击来实现
+//        productAdapter.setOnItemClickListener(new OnItemClickListener() {
+//            @Override
+//            public void onItemClick(ViewGroup parent, View view, Object o, int position) {
+//                ToastUtil.showShort(String.valueOf(position));
+//            }
+//
+//            @Override
+//            public boolean onItemLongClick(ViewGroup parent, View view, Object o, int position) {
+//                return false;
+//            }
+//        });
     }
 
     @Override

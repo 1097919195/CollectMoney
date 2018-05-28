@@ -95,11 +95,17 @@ public interface ApiService {
 //
 
 
-    //获取成衣详情
+    //根据卡号获取成衣详情
     @FormUrlEncoded
     @POST("api/cards/get_clothes")
     Observable<HttpResponse<ProductDetails>> getProductDetails(
             @Field("card_num") String num
+    );
+
+    //根据二维码获取成衣详情
+    @GET("api/third/samples/parts")
+    Observable<HttpResponse<ProductDetails>> getProductDetailsWithScan(
+            @Query("content") String content
     );
 
 }

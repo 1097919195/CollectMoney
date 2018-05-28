@@ -5,6 +5,10 @@ package com.example.collect.collectmoneysystem.app;
  */
 
 public class AppConstant {
+    public static final String IMAGE_DOMAIN_NAME = "https://ts.npclo.com/";
+
+
+
     public static final String QUALITY_DATA_LENGTH="QUALITY_DATA_LENGTH";
 
     public static final String SPEECH_APP_KEY = "hhzjkm3l5akcz5oiflyzmmmitzrhmsfd73lyl3y2";

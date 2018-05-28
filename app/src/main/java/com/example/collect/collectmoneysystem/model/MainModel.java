@@ -21,4 +21,12 @@ public class MainModel implements MainContract.Model{
                 .map(new Api.HttpResponseFunc<>())
                 .compose(RxSchedulers.io_main());
     }
+
+    @Override
+    public Observable<ProductDetails> getProductDetailsWithScan(String content) {
+        return Api.getDefault(HostType.QUALITY_DATA)
+                .getProductDetailsWithScan(content)
+                .map(new Api.HttpResponseFunc<>())
+                .compose(RxSchedulers.io_main());
+    }
 }

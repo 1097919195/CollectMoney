@@ -121,39 +121,44 @@ public abstract class RxSubscriber<T> extends DisposableObserver<T> {
             _onError(BaseApplication.getAppContext().getString(R.string.no_net));
         }
         //服务器
-        else if (e instanceof ServerException) {
+        else if (e instanceof ServerException) {//一定要对应返回的异常类型
             _onError(e.getMessage());
         }
         else if (e instanceof HttpException) {
             HttpException exception = (HttpException) e;
             int code = exception.response().code();
             LogUtils.loge("onErrorCode==" + code);
-            if (code ==422) {
-                try {
-                    String body = exception.response().errorBody().string();
-                    LogUtils.loge("onErrorBody==" + body);
+            if (code < 500) {
+                if (code ==422) {
+                    try {
+                        String body = exception.response().errorBody().string();
+                        LogUtils.loge("onErrorBody==" + body);
 
-                    Gson gson = new Gson();
-                    HttpResponseError responseError = gson.fromJson(body, HttpResponseError.class);
-                    LogUtils.loge(responseError.getErrors().get(0).getMessage());
-                    _onError(responseError.getErrors().get(0).getMessage());
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                        Gson gson = new Gson();
+                        HttpResponseError responseError = gson.fromJson(body, HttpResponseError.class);
+                        LogUtils.loge(responseError.getErrors().get(0).getMessage());
+                        _onError(responseError.getErrors().get(0).getMessage());
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }else {
+                    try {
+                        String body = exception.response().errorBody().string();
+                        LogUtils.loge("onErrorBody==" + body);
+
+                        Gson gson = new Gson();
+                        HttpResponseError responseError = gson.fromJson(body, HttpResponseError.class);
+                        LogUtils.loge(responseError.getMsg());
+                        _onError(responseError.getMsg());
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }else {
-                try {
-                    String body = exception.response().errorBody().string();
-                    LogUtils.loge("onErrorBody==" + body);
-
-                    Gson gson = new Gson();
-                    HttpResponseError responseError = gson.fromJson(body, HttpResponseError.class);
-                    LogUtils.loge(responseError.getMsg());
-                    _onError(responseError.getMsg());
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                _onError("服务器异常");
             }
-        } else if (e instanceof InternalError) {
+        }
+        else if (e instanceof InternalError) {
             LogUtils.loge("asdfasdf");
         }
         //其它

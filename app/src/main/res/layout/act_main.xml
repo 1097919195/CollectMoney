@@ -183,6 +183,7 @@
                         android:padding="10dp"
                         android:textColor="@color/red"/>
                     <TextView
+                        android:id="@+id/register_account"
                         android:layout_marginRight="14dp"
                         android:gravity="center"
                         android:layout_width="0dp"
@@ -201,35 +202,38 @@
                 android:layout_height="80dp">
 
                 <Button
-                    android:id="@+id/noCode_collect"
-                    android:layout_marginStart="14dp"
+                    android:id="@+id/scan_add_goods"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="16dp"
                     android:background="@drawable/btn_white"
-                    android:text="无码收银"
+                    android:padding="10dp"
+                    android:text="扫码添加"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/item_text_size_25"
-                    android:padding="10dp"/>
+                    android:textSize="@dimen/item_text_size_25" />
                 <Button
-                    android:layout_toRightOf="@+id/noCode_collect"
+                    android:id="@+id/add_goods"
+                    android:layout_toRightOf="@+id/scan_add_goods"
                     android:layout_marginLeft="15dp"
                     android:layout_marginStart="14dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/btn_white"
-                    android:text="整单折扣"
+                    android:text="刷卡添加"
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/item_text_size_25"
                     android:padding="10dp"/>
                 <Button
-                    android:id="@+id/add_goods"
+                    android:id="@+id/register_account_details"
                     android:layout_marginEnd="14dp"
                     android:layout_alignParentRight="true"
                     android:layout_marginStart="14dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/btn_light_blue"
-                    android:text="继续添加商品"
+                    android:text="查看挂单情况"
                     android:textColor="@color/white"
                     android:textSize="@dimen/item_text_size_25"
                     android:padding="10dp"/>

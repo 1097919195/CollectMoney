@@ -20,9 +20,24 @@ public class MainPresenter extends MainContract.Presenter{
 
             @Override
             protected void _onError(String message) {
-                mView.showErrorTip("该卡号无对应成衣");
+                mView.showErrorTip(message);
             }
         }));
 
+    }
+
+    @Override
+    public void getProductDetailsWithScanRequest(String content) {
+        mRxManage.add(mModel.getProductDetailsWithScan(content).subscribeWith(new RxSubscriber<ProductDetails>(mContext, true) {
+            @Override
+            protected void _onNext(ProductDetails productDetails) {
+                mView.returnGetProductDetailsWithScan(productDetails);
+            }
+
+            @Override
+            protected void _onError(String message) {
+                mView.showErrorTip(message);
+            }
+        }));
     }
 }
