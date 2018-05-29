@@ -7,6 +7,8 @@ package com.example.collect.collectmoneysystem.app;
 public class AppConstant {
     public static final String IMAGE_DOMAIN_NAME = "https://ts.npclo.com/";
 
+    public static final String SEND_REGISTER_DETAILS = "SEND_REGISTER_DETAILS";
+
 
 
     public static final String QUALITY_DATA_LENGTH="QUALITY_DATA_LENGTH";

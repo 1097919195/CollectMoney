@@ -256,7 +256,7 @@
                     android:layout_alignParentRight="true"
                     android:background="@drawable/btn_light_blue"
                     android:padding="10dp"
-                    android:text="查看挂单情况"
+                    android:text="查看挂单详情"
                     android:textColor="@color/white"
                     android:textSize="@dimen/item_text_size_30"
                     notButton:circleSize="12dp"  />

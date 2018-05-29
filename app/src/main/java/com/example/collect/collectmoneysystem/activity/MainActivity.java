@@ -10,12 +10,14 @@ import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +39,7 @@ import com.example.collect.collectmoneysystem.app.AppApplication;
 import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
+import com.example.collect.collectmoneysystem.bean.SerializableMap;
 import com.example.collect.collectmoneysystem.camera.CaptureActivity;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.example.collect.collectmoneysystem.model.MainModel;
@@ -56,6 +59,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -132,6 +136,7 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
 
 
      List<ProductDetails> productDetailsList = new ArrayList<>();
+     List<ProductDetails> registerDetails = new ArrayList<>();
      CommonRecycleViewAdapter<ProductDetails> productAdapter;
 
      float factPrice = 0;
@@ -143,6 +148,8 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
      public static final int REQUEST_CODE_SAMPLE = 1201;
      private static final int SCAN_HINT = 1001;
      private static final int CODE_HINT = 1002;
+
+     List<List<ProductDetails>> registerDetailsList = new ArrayList<>();
 
      @Override
      public int getLayoutId() {
@@ -275,8 +282,39 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
          register_account.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 registerCount = registerCount + 1;
-                 notificationButton.setNotificationNumber(registerCount);
+                 if (productDetailsList.size() > 0) {
+                     registerCount = registerCount + 1;
+                     notificationButton.setNotificationNumber(registerCount);
+                     registerDetailsList.add(productDetailsList);
+                     LogUtils.loge(String.valueOf(registerDetailsList.get(0).size()));
+                     ToastUtil.showShort("挂单成功");
+
+                     productDetailsList = new ArrayList<>();//
+                     initProductDetails();
+                     goodsCounts.setText("");
+                     factPrice = 0;
+                     finalPrice = 0;
+                     goodsTotals.setText("");
+                     receivable.setText("");
+                     final_fact.setText("0.0");
+                 } else {
+                     ToastUtil.showShort("请先添加商品");
+                 }
+             }
+         });
+
+         notificationButton.setOnClickListener(v -> {
+             if (registerCount >= 1) {
+                 Intent intent = new Intent(MainActivity.this,RegisterDetalisActivity.class);
+                 Bundle bundle = new Bundle();
+                 SerializableMap tmpmap=new SerializableMap();
+                 tmpmap.setMap(registerDetailsList);
+                 LogUtils.loge(String.valueOf(registerDetailsList.get(0).size()));
+                 bundle.putSerializable(AppConstant.SEND_REGISTER_DETAILS, tmpmap);
+                 intent.putExtras(bundle);
+                 startActivity(intent);
+             }else {
+                 ToastUtil.showShort("暂无挂单信息");
              }
          });
 

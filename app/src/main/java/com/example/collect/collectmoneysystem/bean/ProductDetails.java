@@ -1,12 +1,16 @@
 package com.example.collect.collectmoneysystem.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Administrator on 2018/5/16 0016.
  */
 
-public class ProductDetails {
+public class ProductDetails implements Serializable {
     /**
      * _id : 5afcfc749134ca08662ec729
      * name : 1
@@ -42,8 +46,6 @@ public class ProductDetails {
     private String style;//款式
     private String profile;//廓形
     private String image;//图片
-    private List<Object> apparelInfo;//成衣信息{name value}
-    private List<String> partsInfo;//量体部位{parts}
 
     public String get_id() {
         return _id;
@@ -157,19 +159,4 @@ public class ProductDetails {
         this.image = image;
     }
 
-    public List<?> getApparelInfo() {
-        return apparelInfo;
-    }
-
-    public void setApparelInfo(List<Object> apparelInfo) {
-        this.apparelInfo = apparelInfo;
-    }
-
-    public List<?> getPartsInfo() {
-        return partsInfo;
-    }
-
-    public void setPartsInfo(List<String> partsInfo) {
-        this.partsInfo = partsInfo;
-    }
 }
