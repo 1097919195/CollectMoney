@@ -10,7 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.collect.collectmoneysystem.R;
+import com.example.collect.collectmoneysystem.activity.MainActivity;
+import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
+import com.jaydenxiao.common.commonutils.ImageLoaderUtils;
 
 import java.util.List;
 
@@ -31,9 +34,11 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter{
     }
 
     private class ChildViewHolder {
-        ImageView mIcon;
-        TextView mChildName;
-        TextView mDetail;
+        ImageView sample_photo;
+        TextView part;
+        TextView spec;
+        TextView size;
+        TextView price;
     }
 
     public MyExpandableListViewAdapter(Context context, List<String> groupItems, List<List<ProductDetails>> childItems){
@@ -62,15 +67,20 @@ public class MyExpandableListViewAdapter extends BaseExpandableListAdapter{
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         Log.e("childData",groupPosition+"  "+childPosition+"  "+mData.size());
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.item_register_details, null);
+            convertView = mInflater.inflate(R.layout.item_product_details, null);
         }
         ChildViewHolder holder = new ChildViewHolder();
-//        holder.mIcon = (ImageView) convertView.findViewById(R.id.img);
-//        holder.mChildName = (TextView) convertView.findViewById(R.id.item_name);
-        holder.mDetail = (TextView) convertView.findViewById(R.id.tv);
-//        holder.mIcon.setBackgroundResource(getChild(groupPosition,childPosition).getResId());
-//        holder.mChildName.setText(getChild(groupPosition, childPosition).getName());
-        holder.mDetail.setText(getChild(groupPosition, childPosition).getImage());
+        holder.sample_photo = (ImageView) convertView.findViewById(R.id.sample_photo);
+        holder.part = (TextView) convertView.findViewById(R.id.part);
+        holder.spec = (TextView) convertView.findViewById(R.id.spec);
+        holder.size = (TextView) convertView.findViewById(R.id.size);
+        holder.price = (TextView) convertView.findViewById(R.id.price);
+
+        ImageLoaderUtils.displaySmallPhoto(mContext,holder.sample_photo, AppConstant.IMAGE_DOMAIN_NAME+getChild(groupPosition, childPosition).getImage());
+        holder.part.setText(getChild(groupPosition, childPosition).getName());
+        holder.spec.setText(getChild(groupPosition, childPosition).getSpec());
+        holder.size.setText(getChild(groupPosition, childPosition).getSize());
+        holder.price.setText(String.valueOf(getChild(groupPosition, childPosition).getRetailPrice()));
         return convertView;
     }
 

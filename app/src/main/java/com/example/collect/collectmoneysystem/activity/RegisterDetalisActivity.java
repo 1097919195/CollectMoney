@@ -1,15 +1,20 @@
 package com.example.collect.collectmoneysystem.activity;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.aspsine.irecyclerview.universaladapter.ViewHolderHelper;
 import com.aspsine.irecyclerview.universaladapter.recyclerview.CommonRecycleViewAdapter;
 import com.example.collect.collectmoneysystem.R;
@@ -18,7 +23,9 @@ import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
 import com.example.collect.collectmoneysystem.bean.SerializableMap;
 import com.jaydenxiao.common.base.BaseActivity;
+import com.jaydenxiao.common.baserx.RxBus2;
 import com.jaydenxiao.common.commonutils.LogUtils;
+import com.jaydenxiao.common.commonutils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,11 +87,30 @@ public class RegisterDetalisActivity extends BaseActivity{
     private void initAdapter() {
         Bundle bundle = getIntent().getExtras();
         SerializableMap serializableMap = (SerializableMap) bundle.get(AppConstant.SEND_REGISTER_DETAILS);
-        List<String> groupItems = Arrays.asList(this.getResources().getStringArray(R.array.group));
+        List<String> groupItems = getIntent().getStringArrayListExtra(AppConstant.SEND_REGISTER_DETAILS_WITH_GROUP);
         registerDetailsList = serializableMap.getMap();
         LogUtils.loge(String.valueOf(registerDetailsList.size()));
         LogUtils.loge(String.valueOf(registerDetailsList.get(0).size()));
         adapter = new MyExpandableListViewAdapter(this,groupItems,registerDetailsList);
         expandableListView.setAdapter(adapter);
+
+        expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                ToastUtil.showShort(String.valueOf(position));
+                new MaterialDialog.Builder(RegisterDetalisActivity.this)
+                        .title("去结算？")
+                        .onPositive((d, i) -> {
+                            RxBus2.getInstance().post(AppConstant.REGISTER_RETURN,position);
+                            finish();
+                        })
+                        .positiveText("确定")
+                        .negativeColor(getResources().getColor(R.color.red))
+                        .negativeText("点错了")
+                        .show();
+                return true;
+            }
+        });
     }
+
 }

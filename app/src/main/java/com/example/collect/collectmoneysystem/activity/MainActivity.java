@@ -2,6 +2,7 @@
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbInterface;
@@ -11,11 +12,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -150,6 +153,8 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
      private static final int CODE_HINT = 1002;
 
      List<List<ProductDetails>> registerDetailsList = new ArrayList<>();
+     MaterialDialog registerDialog;
+     ArrayList<String> groupItems = new ArrayList<>();
 
      @Override
      public int getLayoutId() {
@@ -182,6 +187,30 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
          initListener();
          initProductDetails();
          initDiscount();
+         initRxBus();
+     }
+
+     private void initRxBus() {
+         mRxManager.on(AppConstant.REGISTER_RETURN, (Consumer<Integer>) integer -> {
+             int position = integer;
+             productDetailsList = registerDetailsList.get(position);
+             initProductDetails();
+             factPrice = 0;
+             goodsCounts.setText(String.valueOf(productDetailsList.size()));
+             for (ProductDetails list : productDetailsList) {
+                 factPrice = factPrice + list.getRetailPrice();
+             }
+             goodsTotals.setText(String.valueOf(factPrice));
+
+             finalPrice = factPrice * associatorDiscount / 10;
+             receivable.setText(String.valueOf(finalPrice));
+             final_fact.setText(String.valueOf(finalPrice));
+
+             groupItems.remove(position);
+             registerDetailsList.remove(position);
+             registerCount = registerCount - 1;
+             notificationButton.setNotificationNumber(registerCount);
+         });
      }
 
      private void initDiscount() {
@@ -269,8 +298,8 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
          );
 
          goods_clear.setOnClickListener(v -> {
-             productDetailsList.clear();
-             productAdapter.notifyDataSetChanged();
+             productDetailsList = new ArrayList<>();
+             initProductDetails();
              goodsCounts.setText("");
              factPrice = 0;
              finalPrice = 0;
@@ -282,21 +311,42 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
          register_account.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 if (productDetailsList.size() > 0) {
-                     registerCount = registerCount + 1;
-                     notificationButton.setNotificationNumber(registerCount);
-                     registerDetailsList.add(productDetailsList);
-                     LogUtils.loge(String.valueOf(registerDetailsList.get(0).size()));
-                     ToastUtil.showShort("挂单成功");
+                 registerDetails = new ArrayList<>();
+                 registerDetails = productDetailsList;
+                 if (registerDetails.size() > 0) {
+                     registerDialog = new MaterialDialog.Builder(MainActivity.this)
+                             .title("请输入备注信息")
+                             .widgetColor(Color.BLUE)//输入框光标的颜色
+                             .inputType(InputType.TYPE_CLASS_PHONE)//可以输入的类型-电话号码
+                             //前2个一个是hint一个是预输入的文字
+                             .input("挂单用户名", "", new MaterialDialog.InputCallback() {
 
-                     productDetailsList = new ArrayList<>();//
-                     initProductDetails();
-                     goodsCounts.setText("");
-                     factPrice = 0;
-                     finalPrice = 0;
-                     goodsTotals.setText("");
-                     receivable.setText("");
-                     final_fact.setText("0.0");
+                                 @Override
+                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                                     groupItems.add(input.toString());
+                                     LogUtils.loge("registerDialog", "输入的是：" + input);
+                                 }
+                             })
+                             .onPositive((d, i) -> {
+                                 registerCount = registerCount + 1;
+                                 notificationButton.setNotificationNumber(registerCount);
+                                 registerDetailsList.add(registerDetails);
+                                 ToastUtil.showShort("挂单成功");
+
+                                 productDetailsList = new ArrayList<>();//
+                                 initProductDetails();
+                                 goodsCounts.setText("");
+                                 factPrice = 0;
+                                 finalPrice = 0;
+                                 goodsTotals.setText("");
+                                 receivable.setText("");
+                                 final_fact.setText("0.0");
+                             })
+                             .positiveText("确定")
+                             .negativeColor(getResources().getColor(R.color.red))
+                             .negativeText("点错了")
+                             .show();
+
                  } else {
                      ToastUtil.showShort("请先添加商品");
                  }
@@ -311,6 +361,7 @@ import static cc.lotuscard.LotusCardDriver.m_UsbDeviceConnection;
                  tmpmap.setMap(registerDetailsList);
                  LogUtils.loge(String.valueOf(registerDetailsList.get(0).size()));
                  bundle.putSerializable(AppConstant.SEND_REGISTER_DETAILS, tmpmap);
+                 bundle.putStringArrayList(AppConstant.SEND_REGISTER_DETAILS_WITH_GROUP,groupItems);
                  intent.putExtras(bundle);
                  startActivity(intent);
              }else {

@@ -8,6 +8,8 @@ public class AppConstant {
     public static final String IMAGE_DOMAIN_NAME = "https://ts.npclo.com/";
 
     public static final String SEND_REGISTER_DETAILS = "SEND_REGISTER_DETAILS";
+    public static final String SEND_REGISTER_DETAILS_WITH_GROUP = "SEND_REGISTER_DETAILS_WITH_GROUP";
+    public static final String REGISTER_RETURN = "REGISTER_RETURN";
 
 
 
@@ -24,5 +26,4 @@ public class AppConstant {
     public static final String NO_BLE_FIND="NO_BLE_FIND";
     public static final String DISPLAY_GRIVITY = "DISPLAY_GRIVITY";
     public static final String CUSTOMER_EXIST = "422";
-
 }

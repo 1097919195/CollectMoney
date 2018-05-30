@@ -19,15 +19,4 @@ public class SerializableMap implements Serializable {
         this.map=map;
     }
 
-//    public static class List<ProductDetails> implements Serializable{
-//        private List<ProductDetails> child;
-//
-//        public List<ProductDetails> getChild() {
-//            return child;
-//        }
-//
-//        public void setChild(List<ProductDetails> child) {
-//            this.child = child;
-//        }
-//    }
 }
