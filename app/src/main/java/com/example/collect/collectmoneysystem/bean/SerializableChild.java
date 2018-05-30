@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by Administrator on 2018/5/29 0029.
  */
 
-public class SerializableMap implements Serializable {
+public class SerializableChild implements Serializable {
     private List<List<ProductDetails>> map;
     public List<List<ProductDetails>> getMap()
     {

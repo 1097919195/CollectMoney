@@ -1,38 +1,28 @@
 package com.example.collect.collectmoneysystem.activity;
 
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.aspsine.irecyclerview.universaladapter.ViewHolderHelper;
-import com.aspsine.irecyclerview.universaladapter.recyclerview.CommonRecycleViewAdapter;
 import com.example.collect.collectmoneysystem.R;
 import com.example.collect.collectmoneysystem.adapter.MyExpandableListViewAdapter;
 import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
-import com.example.collect.collectmoneysystem.bean.SerializableMap;
+import com.example.collect.collectmoneysystem.bean.SerializableGroup;
+import com.example.collect.collectmoneysystem.bean.SerializableChild;
 import com.jaydenxiao.common.base.BaseActivity;
 import com.jaydenxiao.common.baserx.RxBus2;
-import com.jaydenxiao.common.commonutils.LogUtils;
 import com.jaydenxiao.common.commonutils.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
-import io.reactivex.functions.Consumer;
 
 /**
  * Created by Administrator on 2018/5/28 0028.
@@ -44,6 +34,8 @@ public class RegisterDetalisActivity extends BaseActivity{
     @BindView(R.id.rc_details)
     ExpandableListView expandableListView;
     List<List<ProductDetails>> registerDetailsList = new ArrayList<>();
+    List<String> groupItems = new ArrayList<>();
+    Bundle bundle;
     MyExpandableListViewAdapter adapter;
 
     @Override
@@ -71,26 +63,16 @@ public class RegisterDetalisActivity extends BaseActivity{
             }
         });
 
-        initRxBus();
         initAdapter();
     }
 
-    private void initRxBus() {
-//        mRxManager.on(AppConstant.SEND_REGISTER_DETAILS, new Consumer<List<List<ProductDetails>>>() {
-//            @Override
-//            public void accept(List<List<ProductDetails>> lists) throws Exception {
-//                registerDetailsList = lists;
-//            }
-//        });
-    }
-
     private void initAdapter() {
-        Bundle bundle = getIntent().getExtras();
-        SerializableMap serializableMap = (SerializableMap) bundle.get(AppConstant.SEND_REGISTER_DETAILS);
-        List<String> groupItems = getIntent().getStringArrayListExtra(AppConstant.SEND_REGISTER_DETAILS_WITH_GROUP);
-        registerDetailsList = serializableMap.getMap();
-        LogUtils.loge(String.valueOf(registerDetailsList.size()));
-        LogUtils.loge(String.valueOf(registerDetailsList.get(0).size()));
+        bundle = getIntent().getExtras();
+        SerializableChild serializableChild = (SerializableChild) bundle.get(AppConstant.SEND_REGISTER_DETAILS_WITH_CHILD);
+        SerializableGroup serializableGroup = (SerializableGroup) bundle.get(AppConstant.SEND_REGISTER_DETAILS_WITH_GROUP);
+        groupItems = serializableGroup.getGroupItems();
+        registerDetailsList = serializableChild.getMap();
+
         adapter = new MyExpandableListViewAdapter(this,groupItems,registerDetailsList);
         expandableListView.setAdapter(adapter);
 
@@ -112,5 +94,4 @@ public class RegisterDetalisActivity extends BaseActivity{
             }
         });
     }
-
 }

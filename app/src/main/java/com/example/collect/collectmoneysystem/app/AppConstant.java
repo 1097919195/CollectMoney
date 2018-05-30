@@ -7,9 +7,14 @@ package com.example.collect.collectmoneysystem.app;
 public class AppConstant {
     public static final String IMAGE_DOMAIN_NAME = "https://ts.npclo.com/";
 
-    public static final String SEND_REGISTER_DETAILS = "SEND_REGISTER_DETAILS";
+    public static final String SEND_REGISTER_DETAILS_WITH_CHILD = "SEND_REGISTER_DETAILS";
     public static final String SEND_REGISTER_DETAILS_WITH_GROUP = "SEND_REGISTER_DETAILS_WITH_GROUP";
     public static final String REGISTER_RETURN = "REGISTER_RETURN";
+    public static final String REGISTER_DETAILS_WITH_SAVEINSTANCESTATE = "REGISTER_DETAILS_WITH_SAVEINSTANCESTATE";
+    public static final String REGISTER_MSG_WITH_SAVEINSTANCESTATE = "REGISTER_MSG_WITH_SAVEINSTANCESTATE";
+    public static final String ACACHE_REGISTER_DETAILS_WITH_GROUP = "ACACHE_REGISTER_DETAILS_WITH_GROUP";
+    public static final String ACACHE_REGISTER_DETAILS_WITH_CHILD = "ACACHE_REGISTER_DETAILS_WITH_CHILD";
+    public static final String ACACHE_REGISTER_DETAILS_WITH_MSG = "ACACHE_REGISTER_DETAILS_WITH_MSG";
 
 
 
