@@ -235,7 +235,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     }
 
     private void initProductDetails() {
-        productAdapter = new CommonRecycleViewAdapter<ProductDetails>(mContext, R.layout.item_product_details, productDetailsList) {
+        productAdapter = new CommonRecycleViewAdapter<ProductDetails>(mContext, R.layout.item_slide, productDetailsList) {
             @Override
             public void convert(ViewHolderHelper helper, ProductDetails productDetails) {
                 TextView part = helper.getView(R.id.part);
@@ -243,12 +243,37 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                 TextView size = helper.getView(R.id.size);
                 TextView price = helper.getView(R.id.price);
                 ImageView img = helper.getView(R.id.sample_photo);
+                TextView delete = helper.getView(R.id.mTvDelete);
 
                 part.setText(productDetails.getName());
                 spec.setText(productDetails.getSpec());
                 size.setText(productDetails.getSize());
                 price.setText(String.valueOf(productDetails.getRetailPrice()));
                 ImageLoaderUtils.displaySmallPhoto(MainActivity.this, img, AppConstant.IMAGE_DOMAIN_NAME + productDetails.getImage());
+
+                delete.setOnClickListener(v->{
+                    delateDialog = new MaterialDialog.Builder(MainActivity.this)
+                            .title("是否删除该商品？")
+                            .backgroundColor(getResources().getColor(R.color.white))
+                            .positiveText("确认")
+                            .negativeText("取消")
+                            .onPositive((dialog, which) -> {
+                                ToastUtil.showShort(String.valueOf(helper.getLayoutPosition()));
+                                factPrice = factPrice - productDetailsList.get(helper.getLayoutPosition()).getRetailPrice();
+                                productDetailsList.remove(helper.getLayoutPosition());
+                                productAdapter.notifyDataSetChanged();
+
+                                goodsCounts.setText(String.valueOf(productDetailsList.size()));
+                                goodsTotals.setText(String.valueOf(factPrice));
+                                finalPrice = factPrice * 9 / 10;
+                                receivable.setText(String.valueOf(finalPrice));
+                                final_fact.setText(String.valueOf(finalPrice));
+                            })
+                            .negativeColor(getResources().getColor(R.color.red))
+                            .build();
+                    delateDialog.show();
+                });
+
 
             }
         };
@@ -261,38 +286,39 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 //         divider.setDrawable(ContextCompat.getDrawable(this,R.drawable.custom_divider));
 //         productDetailIrc.addItemDecoration(divider);
 
-        productAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(ViewGroup parent, View view, Object o, int position) {
-                ToastUtil.showShort(String.valueOf(position));
-            }
-
-            @Override
-            public boolean onItemLongClick(ViewGroup parent, View view, Object o, int position) {
-
-                delateDialog = new MaterialDialog.Builder(MainActivity.this)
-                        .title("是否删除该商品？")
-                        .backgroundColor(getResources().getColor(R.color.white))
-                        .positiveText("确认")
-                        .negativeText("取消")
-                        .onPositive((dialog, which) -> {
-                            factPrice = factPrice - productDetailsList.get(position).getRetailPrice();
-                            productDetailsList.remove(position);
-                            productAdapter.notifyDataSetChanged();
-
-                            goodsCounts.setText(String.valueOf(productDetailsList.size()));
-                            goodsTotals.setText(String.valueOf(factPrice));
-                            finalPrice = factPrice * 9 / 10;
-                            receivable.setText(String.valueOf(finalPrice));
-                            final_fact.setText(String.valueOf(finalPrice));
-                        })
-                        .negativeColor(getResources().getColor(R.color.red))
-                        .build();
-                delateDialog.show();
-
-                return false;
-            }
-        });
+        //长按item删除指定商品
+//        productAdapter.setOnItemClickListener(new OnItemClickListener() {
+//            @Override
+//            public void onItemClick(ViewGroup parent, View view, Object o, int position) {
+//                ToastUtil.showShort(String.valueOf(position));
+//            }
+//
+//            @Override
+//            public boolean onItemLongClick(ViewGroup parent, View view, Object o, int position) {
+//
+//                delateDialog = new MaterialDialog.Builder(MainActivity.this)
+//                        .title("是否删除该商品？")
+//                        .backgroundColor(getResources().getColor(R.color.white))
+//                        .positiveText("确认")
+//                        .negativeText("取消")
+//                        .onPositive((dialog, which) -> {
+//                            factPrice = factPrice - productDetailsList.get(position).getRetailPrice();
+//                            productDetailsList.remove(position);
+//                            productAdapter.notifyDataSetChanged();
+//
+//                            goodsCounts.setText(String.valueOf(productDetailsList.size()));
+//                            goodsTotals.setText(String.valueOf(factPrice));
+//                            finalPrice = factPrice * 9 / 10;
+//                            receivable.setText(String.valueOf(finalPrice));
+//                            final_fact.setText(String.valueOf(finalPrice));
+//                        })
+//                        .negativeColor(getResources().getColor(R.color.red))
+//                        .build();
+//                delateDialog.show();
+//
+//                return false;
+//            }
+//        });
 
     }
 

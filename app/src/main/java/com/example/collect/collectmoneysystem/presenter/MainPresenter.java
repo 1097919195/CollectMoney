@@ -4,6 +4,7 @@ import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.jaydenxiao.common.baserx.RxSubscriber;
+import com.jaydenxiao.common.baserx.RxSubscriber2;
 
 /**
  * Created by Administrator on 2018/5/24 0024.
@@ -12,7 +13,7 @@ import com.jaydenxiao.common.baserx.RxSubscriber;
 public class MainPresenter extends MainContract.Presenter{
     @Override
     public void getProductDetailsRequest(String num) {
-        mRxManage.add(mModel.getProductDetails(num).subscribeWith(new RxSubscriber<ProductDetails>(mContext, true) {
+        mRxManage.add(mModel.getProductDetails(num).subscribeWith(new RxSubscriber2<ProductDetails>(mContext, true) {
             @Override
             protected void _onNext(ProductDetails productDetails) {
                 mView.returnGetProductDetails(productDetails);
