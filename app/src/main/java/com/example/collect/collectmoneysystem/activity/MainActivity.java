@@ -41,6 +41,8 @@ import com.example.collect.collectmoneysystem.camera.CaptureActivity;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.example.collect.collectmoneysystem.model.MainModel;
 import com.example.collect.collectmoneysystem.presenter.MainPresenter;
+import com.example.collect.collectmoneysystem.widget.SlideDelete;
+import com.example.collect.collectmoneysystem.widget.SlideDelete.OnSlideDeleteListener;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jaydenxiao.common.base.BaseActivity;
 import com.jaydenxiao.common.commonutils.ACache;
@@ -52,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -147,6 +150,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     SerializableGroup group = new SerializableGroup();
     List<List<ProductDetails>> childList = new ArrayList<>();
     ArrayList<String> groupList = new ArrayList<>();
+    List<SlideDelete> slideDeleteArrayList = new ArrayList<>();
 
     @Override
     public int getLayoutId() {
@@ -244,6 +248,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                 TextView price = helper.getView(R.id.price);
                 ImageView img = helper.getView(R.id.sample_photo);
                 TextView delete = helper.getView(R.id.mTvDelete);
+                SlideDelete slideDelete = helper.getView(R.id.slideDelete);
 
                 part.setText(productDetails.getName());
                 spec.setText(productDetails.getSpec());
@@ -272,6 +277,20 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                             .negativeColor(getResources().getColor(R.color.red))
                             .build();
                     delateDialog.show();
+                });
+
+                slideDelete.setOnSlideDeleteListener(new OnSlideDeleteListener() {
+                    @Override
+                    public void onOpen(SlideDelete slideDelete) {
+                        closeOtherItem();
+                        slideDeleteArrayList.add(slideDelete);
+                        slideDelete.isShowDelete(true);
+                    }
+
+                    @Override
+                    public void onClose(SlideDelete slideDelete) {
+                        slideDeleteArrayList.remove(slideDelete);
+                    }
                 });
 
 
@@ -320,6 +339,16 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 //            }
 //        });
 
+    }
+
+    private void closeOtherItem(){
+        // 采用Iterator的原因是for是线程不安全的，迭代器是线程安全的
+        ListIterator<SlideDelete> slideDeleteListIterator = slideDeleteArrayList.listIterator();
+        while(slideDeleteListIterator.hasNext()){
+            SlideDelete slideDelete = slideDeleteListIterator.next();
+            slideDelete.isShowDelete(false);
+        }
+        slideDeleteArrayList.clear();
     }
 
     private void initListener() {
