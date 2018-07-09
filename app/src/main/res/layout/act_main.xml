@@ -258,7 +258,7 @@
                     android:padding="10dp"
                     android:text="查看挂单详情"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/item_text_size_30"
+                    android:textSize="@dimen/item_text_size_25"
                     notButton:circleSize="12dp"  />
                 <!--<Button-->
                     <!--android:id="@+id/register_account_details"-->

@@ -2,6 +2,7 @@ package com.example.collect.collectmoneysystem.presenter;
 
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
+import com.example.collect.collectmoneysystem.bean.WeixinPayData;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.jaydenxiao.common.baserx.RxSubscriber;
 import com.jaydenxiao.common.baserx.RxSubscriber2;
@@ -33,6 +34,21 @@ public class MainPresenter extends MainContract.Presenter{
             @Override
             protected void _onNext(ProductDetails productDetails) {
                 mView.returnGetProductDetailsWithScan(productDetails);
+            }
+
+            @Override
+            protected void _onError(String message) {
+                mView.showErrorTip(message);
+            }
+        }));
+    }
+
+    @Override
+    public void getPayResultInfoRequest(String code) {
+        mRxManage.add(mModel.getPayResultInfo(code).subscribeWith(new RxSubscriber2<WeixinPayData>(mContext, true) {
+            @Override
+            protected void _onNext(WeixinPayData weixinPayData) {
+                mView.returnGetPayResultInfo(weixinPayData);
             }
 
             @Override

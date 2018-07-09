@@ -3,6 +3,7 @@ package com.example.collect.collectmoneysystem.api;
 
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
+import com.example.collect.collectmoneysystem.bean.WeixinPayData;
 
 import io.reactivex.Observable;
 import retrofit2.http.Field;
@@ -106,6 +107,13 @@ public interface ApiService {
     @GET("api/third/samples/parts")
     Observable<HttpResponse<ProductDetails>> getProductDetailsWithScan(
             @Query("content") String content
+    );
+
+    //微信支付后台接口
+    @FormUrlEncoded
+    @POST("wechat/pay")
+    Observable<WeixinPayData> getPayResult(
+            @Field("auth_code") String auth_code
     );
 
 }

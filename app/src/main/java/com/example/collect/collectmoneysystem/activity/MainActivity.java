@@ -37,10 +37,12 @@ import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
 import com.example.collect.collectmoneysystem.bean.SerializableGroup;
 import com.example.collect.collectmoneysystem.bean.SerializableChild;
+import com.example.collect.collectmoneysystem.bean.WeixinPayData;
 import com.example.collect.collectmoneysystem.camera.CaptureActivity;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.example.collect.collectmoneysystem.model.MainModel;
 import com.example.collect.collectmoneysystem.presenter.MainPresenter;
+import com.example.collect.collectmoneysystem.utils.MaterialDialogUtils;
 import com.example.collect.collectmoneysystem.widget.SlideDelete;
 import com.example.collect.collectmoneysystem.widget.SlideDelete.OnSlideDeleteListener;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -145,6 +147,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     private static final int CODE_HINT = 1002;
 
     MaterialDialog registerDialog;
+    MaterialDialog payDialog;
     Bundle bundle = new Bundle();
     SerializableChild child = new SerializableChild();
     SerializableGroup group = new SerializableGroup();
@@ -351,13 +354,38 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         slideDeleteArrayList.clear();
     }
 
+    private MaterialDialog dialog;
     private void initListener() {
         clearAll.setOnClickListener(v -> {
             getAmount.setText("0");
+//            if (dialog != null) {
+//                dialog.show();
+//            } else {
+//                MaterialDialog.Builder builder = MaterialDialogUtils.showIndeterminateProgressDialog(mContext, "请稍等...", true);
+//                builder.cancelable(true);
+//                dialog = builder.show();
+//            }
         });
 
         commitNum.setOnClickListener(v -> {
-            startActivity(TestActivity.class);
+//            startActivity(TestActivity.class);
+            payDialog = new MaterialDialog.Builder(this)
+                    .title("请扫描客户信息")
+                    .input("条码信息", "", new MaterialDialog.InputCallback() {
+                        @Override
+                        public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                            LogUtils.loge("输入的是：" + input);
+                            if (input.toString().length() > 0) {
+                                mPresenter.getPayResultInfoRequest(input.toString());
+                            }else {
+                                ToastUtil.showShort("您还没有扫描客户信息！");
+                            }
+
+                        }
+                    })
+                    .negativeText("取消")
+                    .positiveColor(getResources().getColor(R.color.main_blue))
+                    .show();
         });
 
         addGoods.setOnClickListener(v ->
@@ -824,6 +852,12 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         finalPrice = factPrice * associatorDiscount / 10;
         receivable.setText(String.valueOf(finalPrice));
         final_fact.setText(String.valueOf(finalPrice));
+    }
+
+    //微信支付
+    @Override
+    public void returnGetPayResultInfo(WeixinPayData weixinPayData) {
+        ToastUtil.showShort(weixinPayData.getResult_code());
     }
 
     @Override
