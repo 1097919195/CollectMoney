@@ -60,6 +60,7 @@ import com.jaydenxiao.common.commonutils.ImageLoaderUtils;
 import com.jaydenxiao.common.commonutils.LogUtils;
 import com.jaydenxiao.common.commonutils.ToastUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -72,6 +73,9 @@ import cc.lotuscard.ILotusCallBack;
 import cc.lotuscard.LotusCardDriver;
 import cc.lotuscard.LotusCardParam;
 import io.reactivex.functions.Consumer;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 import static cc.lotuscard.LotusCardDriver.m_InEndpoint;
 import static cc.lotuscard.LotusCardDriver.m_OutEndpoint;
@@ -168,7 +172,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     List<List<ProductDetails>> childList = new ArrayList<>();
     ArrayList<String> groupList = new ArrayList<>();
     List<SlideDelete> slideDeleteArrayList = new ArrayList<>();
-    List<ClothesIdBean> clothesIdList = new ArrayList<>();
+    List<String> clothesIdList = new ArrayList<>();
 
     private View pop;
     private Button btn_left;
@@ -415,10 +419,11 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                     LogUtils.loge("输入的是：" + input);
                                     if (input.toString().length() > 0) {
                                         AppConstant.AUTH_CODE = input.toString();
-
-                                        AppConstant.CLOTHES_ID = (new Gson()).toJson(clothesIdList);
-//                                    AppConstant.CLOTHES_ID = "5b5a686f9134ca295e263562";
-                                        mPresenter.getProductOrderRequest(AppConstant.CLOTHES_ID);
+                                        MultipartBody.Part[] clothesIds = new MultipartBody.Part[clothesIdList.size()];
+                                        for (int i=0;i<clothesIdList.size();i++) {
+                                            clothesIds[i] = getSpecialBodyType(clothesIdList.get(i));
+                                        }
+                                        mPresenter.getProductOrderRequest(clothesIds);
                                     }else {
                                         ToastUtil.showShort("您还没有扫描客户信息！");
                                     }
@@ -606,6 +611,12 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
         });
 
+    }
+
+    private MultipartBody.Part getSpecialBodyType(String clothesIds) {
+        //创建RequestBody，其中multipart/form-data为编码类型
+        RequestBody request = RequestBody.create(MediaType.parse("multipart/form-data"), clothesIds);
+        return MultipartBody.Part.createFormData("clothes_ids", clothesIds);
     }
 
     private void showPopupWindow() {
@@ -934,10 +945,11 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         receivable.setText(String.valueOf(finalPrice));
         final_fact.setText(String.valueOf(finalPrice));
 
-        //添加clothesId给集合，上传clothesId位数组时需要
-        ClothesIdBean clothesIdBean = new ClothesIdBean();
-        clothesIdBean.setClothes_ids(productDetails.get_id());
-        clothesIdList.add(clothesIdBean);
+//        //添加clothesId给集合，上传clothesId位数组时需要
+//        ClothesIdBean clothesIdBean = new ClothesIdBean();
+//        clothesIdBean.setClothes_ids(productDetails.get_id());
+//        clothesIdList.add(clothesIdBean);
+        clothesIdList.add(productDetails.get_id());
     }
 
     //返回根据商品编号获取的成衣情况
@@ -955,10 +967,11 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         receivable.setText(String.valueOf(finalPrice));
         final_fact.setText(String.valueOf(finalPrice));
 
-        //添加clothesId给集合，上传clothesId位数组时需要
-        ClothesIdBean clothesIdBean = new ClothesIdBean();
-        clothesIdBean.setClothes_ids(productDetails.get_id());
-        clothesIdList.add(clothesIdBean);
+//        //添加clothesId给集合，上传clothesId位数组时需要
+//        ClothesIdBean clothesIdBean = new ClothesIdBean();
+//        clothesIdBean.setClothes_ids(productDetails.get_id());
+//        clothesIdList.add(clothesIdBean);
+        clothesIdList.add(productDetails.get_id());
 
         productCode.setText("");
     }
@@ -967,6 +980,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     @Override
     public void returnGetProductOrder(OrderData orderData) {
         AppConstant.ORDER_ID = orderData.get_id();
+        AppConstant.TOTAL_FEE = orderData.getTotal_fee();
         if (AppConstant.ORDER_ID != "" && AppConstant.AUTH_CODE != "") {
             mPresenter.getPayResultInfoRequest(AppConstant.ORDER_ID, AppConstant.AUTH_CODE);
         }else {
@@ -978,6 +992,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     @Override
     public void returnGetPayResultInfo(HttpResponse httpResponse) {
 //        ToastUtil.showShort("支付成功");
+        productDetailsList.clear();
+        clothesIdList.clear();
+        productAdapter.notifyDataSetChanged();
     }
 
     @Override

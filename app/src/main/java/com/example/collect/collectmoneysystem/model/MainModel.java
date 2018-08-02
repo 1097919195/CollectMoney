@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 /**
@@ -36,11 +37,9 @@ public class MainModel implements MainContract.Model{
     }
 
     @Override
-    public Observable<OrderData> getProductOrder(String clothesId) {
-        Map<String, RequestBody> map = new HashMap<>();
-        map.put("clothes_ids[]", RequestBody.create(null, clothesId));
+    public Observable<OrderData> getProductOrder(MultipartBody.Part[] clothesId) {
         return Api.getDefault(HostType.QUALITY_DATA_NEW)
-                .productOrder(map)
+                .productOrder(clothesId)
                 .map(new Api.HttpResponseFunc<>())
                 .compose(RxSchedulers.io_main());
     }

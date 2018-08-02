@@ -8,6 +8,7 @@ import com.jaydenxiao.common.base.BasePresenter;
 import com.jaydenxiao.common.base.BaseView;
 
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
 
 /**
  * Created by Administrator on 2018/5/24 0024.
@@ -19,7 +20,7 @@ public interface MainContract {
 
         Observable<ProductDetails> getProductDetailsWithShop(String content);
 
-        Observable<OrderData> getProductOrder(String clothesId);
+        Observable<OrderData> getProductOrder(MultipartBody.Part[] clothesId);
 
         Observable<HttpResponse> getPayResultInfo(String orderId, String code);
     }
@@ -39,7 +40,7 @@ public interface MainContract {
 
         public abstract void getProductDetailsWithShopRequest(String content);
 
-        public abstract void getProductOrderRequest(String clothesId);
+        public abstract void getProductOrderRequest(MultipartBody.Part[] clothesId);
 
         public abstract void getPayResultInfoRequest(String orderId, String code);
     }

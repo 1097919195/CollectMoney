@@ -7,6 +7,8 @@ import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.jaydenxiao.common.baseapp.BaseApplication;
 import com.jaydenxiao.common.baserx.RxSubscriber2;
 
+import okhttp3.MultipartBody;
+
 /**
  * Created by Administrator on 2018/5/24 0024.
  */
@@ -44,7 +46,7 @@ public class MainPresenter extends MainContract.Presenter{
     }
 
     @Override
-    public void getProductOrderRequest(String clothesId) {
+    public void getProductOrderRequest(MultipartBody.Part[] clothesId) {
         mRxManage.add(mModel.getProductOrder(clothesId).subscribeWith(new RxSubscriber2<OrderData>(mContext, true) {
             @Override
             protected void _onNext(OrderData orderData) {
