@@ -2,15 +2,20 @@ package com.example.collect.collectmoneysystem.api;
 
 
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
+import com.example.collect.collectmoneysystem.bean.LoginTokenData;
+import com.example.collect.collectmoneysystem.bean.OrderData;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
-import com.example.collect.collectmoneysystem.bean.WeixinPayData;
+
+import java.util.Map;
 
 import io.reactivex.Observable;
+import okhttp3.RequestBody;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
+import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 
 /**
  * des:ApiService
@@ -95,24 +100,40 @@ public interface ApiService {
 //    );
 //
 
+    //登录
+    @FormUrlEncoded
+    @POST("api/shop/login")
+    Observable<HttpResponse<LoginTokenData>> getTokenWithSignIn(
+            @Field("mobile") String username,
+            @Field("password") String password
+    );
 
     //根据卡号获取成衣详情
     @FormUrlEncoded
-    @POST("api/cards/get_clothes")
+    @POST("api/shop/clothes/search")
     Observable<HttpResponse<ProductDetails>> getProductDetails(
             @Field("card_num") String num
     );
 
-    //根据二维码获取成衣详情
-    @GET("api/third/samples/parts")
-    Observable<HttpResponse<ProductDetails>> getProductDetailsWithScan(
-            @Query("content") String content
+    //根据商品编号获取成衣详情
+    @FormUrlEncoded
+    @POST("api/shop/clothes/search")
+    Observable<HttpResponse<ProductDetails>> getProductDetailsWithShop(
+            @Field("c_num") String content
+    );
+
+    //订单下单
+    @Multipart
+    @POST("api/shop/orders")
+    Observable<HttpResponse<OrderData>> productOrder(
+            @PartMap Map<String, RequestBody> map
     );
 
     //微信支付后台接口
     @FormUrlEncoded
-    @POST("wechat/pay")
-    Observable<WeixinPayData> getPayResult(
+    @POST("api/shop/orders/pay")
+    Observable<HttpResponse> getPayResult(
+            @Field("order_id") String orderId,
             @Field("auth_code") String auth_code
     );
 

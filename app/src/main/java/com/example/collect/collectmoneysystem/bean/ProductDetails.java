@@ -38,8 +38,7 @@ public class ProductDetails implements Serializable {
     private String spec;//规格
     private String ban_xing;//版型
     private int type;//样衣类型
-    private int retailPrice;//零售价
-    private int costPrice;//成本价
+    private int retail_price;//零售价
     private String size;//码号
     private String color;//颜色
     private String fabric;//布料
@@ -96,19 +95,11 @@ public class ProductDetails implements Serializable {
     }
 
     public int getRetailPrice() {
-        return retailPrice;
+        return retail_price;
     }
 
-    public void setRetailPrice(int retailPrice) {
-        this.retailPrice = retailPrice;
-    }
-
-    public int getCostPrice() {
-        return costPrice;
-    }
-
-    public void setCostPrice(int costPrice) {
-        this.costPrice = costPrice;
+    public void setRetailPrice(int retail_price) {
+        this.retail_price = retail_price;
     }
 
     public String getSize() {

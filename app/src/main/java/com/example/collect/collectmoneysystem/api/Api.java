@@ -7,6 +7,8 @@ import android.util.Log;
 import android.util.SparseArray;
 
 
+import com.example.collect.collectmoneysystem.app.AppApplication;
+import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.utils.exception.ApiException;
 import com.example.collect.collectmoneysystem.utils.exception.TimeoutException;
@@ -14,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jaydenxiao.common.baseapp.BaseApplication;
 import com.jaydenxiao.common.commonutils.NetWorkUtils;
+import com.jaydenxiao.common.commonutils.SPUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,9 +104,12 @@ public class Api {
         Interceptor headerInterceptor = new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
+                String jwt = SPUtils.getSharedStringData(AppApplication.getAppContext(), AppConstant.TOKEN);
                 //将请求体设置给请求方法内
                 Request build = chain.request().newBuilder()
                         //使用 addHeader(name, value) 方法来为 HTTP 头添加新的值
+                        .addHeader("Accept","application/json")
+                        .addHeader("Authorization", jwt)
                         .addHeader("Content-Type", "application/json")//Content-Type向接收方指示实体的介质类型，指定HEAD方法送到接收方的实体介质类型，或GET方法发送的请求介质类型
                         .build();
                 return chain.proceed(build);

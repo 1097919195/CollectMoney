@@ -1,5 +1,6 @@
 package com.example.collect.collectmoneysystem.activity;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,13 +17,11 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -35,23 +34,24 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.aspsine.irecyclerview.IRecyclerView;
 import com.aspsine.irecyclerview.universaladapter.ViewHolderHelper;
 import com.aspsine.irecyclerview.universaladapter.recyclerview.CommonRecycleViewAdapter;
-import com.aspsine.irecyclerview.universaladapter.recyclerview.OnItemClickListener;
 import com.carlos.notificatoinbutton.library.NotificationButton;
 import com.example.collect.collectmoneysystem.R;
 import com.example.collect.collectmoneysystem.adapter.CalculatorAdapter;
 import com.example.collect.collectmoneysystem.app.AppApplication;
 import com.example.collect.collectmoneysystem.app.AppConstant;
+import com.example.collect.collectmoneysystem.bean.ClothesIdBean;
+import com.example.collect.collectmoneysystem.bean.HttpResponse;
+import com.example.collect.collectmoneysystem.bean.OrderData;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
-import com.example.collect.collectmoneysystem.bean.SerializableGroup;
 import com.example.collect.collectmoneysystem.bean.SerializableChild;
-import com.example.collect.collectmoneysystem.bean.WeixinPayData;
+import com.example.collect.collectmoneysystem.bean.SerializableGroup;
 import com.example.collect.collectmoneysystem.camera.CaptureActivity;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.example.collect.collectmoneysystem.model.MainModel;
 import com.example.collect.collectmoneysystem.presenter.MainPresenter;
-import com.example.collect.collectmoneysystem.utils.MaterialDialogUtils;
 import com.example.collect.collectmoneysystem.widget.SlideDelete;
 import com.example.collect.collectmoneysystem.widget.SlideDelete.OnSlideDeleteListener;
+import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jaydenxiao.common.base.BaseActivity;
 import com.jaydenxiao.common.base.BasePopupWindow;
@@ -168,6 +168,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     List<List<ProductDetails>> childList = new ArrayList<>();
     ArrayList<String> groupList = new ArrayList<>();
     List<SlideDelete> slideDeleteArrayList = new ArrayList<>();
+    List<ClothesIdBean> clothesIdList = new ArrayList<>();
 
     private View pop;
     private Button btn_left;
@@ -175,6 +176,12 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     private ImageView pop_exit;
     private IRecyclerView irc_search;
     private BasePopupWindow popupWindow;
+
+    public static void startAction(Activity activity) {
+        Intent intent = new Intent(activity, MainActivity.class);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
 
     @Override
     public int getLayoutId() {
@@ -302,6 +309,8 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                 finalPrice = factPrice * 9 / 10;
                                 receivable.setText(String.valueOf(finalPrice));
                                 final_fact.setText(String.valueOf(finalPrice));
+
+                                clothesIdList.remove(helper.getLayoutPosition());
                             })
                             .negativeColor(getResources().getColor(R.color.red))
                             .build();
@@ -395,33 +404,42 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
         commitNum.setOnClickListener(v -> {
 //            startActivity(TestActivity.class);
-            if (Float.valueOf(getAmount.getEditableText().toString())>0) {
-                payDialog = new MaterialDialog.Builder(this)
-                        .title("订单金额为 "+getAmount.getEditableText().toString()+" 元")
-                        .widgetColor(Color.BLUE)//输入框光标的颜色
-                        .input("条码信息", "", new MaterialDialog.InputCallback() {
-                            @Override
-                            public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                                LogUtils.loge("输入的是：" + input);
-                                if (input.toString().length() > 0) {
-                                    mPresenter.getPayResultInfoRequest(input.toString());
-                                }else {
-                                    ToastUtil.showShort("您还没有扫描客户信息！");
-                                }
+            if (clothesIdList.size() > 0) {
+                if (Float.valueOf(getAmount.getEditableText().toString())>0) {
+                    payDialog = new MaterialDialog.Builder(this)
+                            .title("订单金额为 "+getAmount.getEditableText().toString()+" 元")
+                            .widgetColor(Color.BLUE)//输入框光标的颜色
+                            .input("条码信息", "", new MaterialDialog.InputCallback() {
+                                @Override
+                                public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                                    LogUtils.loge("输入的是：" + input);
+                                    if (input.toString().length() > 0) {
+                                        AppConstant.AUTH_CODE = input.toString();
 
-                            }
-                        })
-                        .negativeText("取消")
-                        .positiveColor(getResources().getColor(R.color.main_blue))
-                        .show();
+                                        AppConstant.CLOTHES_ID = (new Gson()).toJson(clothesIdList);
+//                                    AppConstant.CLOTHES_ID = "5b5a686f9134ca295e263562";
+                                        mPresenter.getProductOrderRequest(AppConstant.CLOTHES_ID);
+                                    }else {
+                                        ToastUtil.showShort("您还没有扫描客户信息！");
+                                    }
+
+                                }
+                            })
+                            .negativeText("取消")
+                            .positiveColor(getResources().getColor(R.color.main_blue))
+                            .show();
+                }else {
+                    ToastUtil.showShort("请先确认金额");
+                }
             }else {
-                ToastUtil.showShort("请先确认金额");
+                ToastUtil.showShort("请先添加样衣");
             }
+
 
         });
 
         addGoods.setOnClickListener(v ->
-                mPresenter.getProductDetailsRequest("826168449")
+                mPresenter.getProductDetailsRequest("3519171754")
         );
 
         goods_clear.setOnClickListener(v -> {
@@ -558,7 +576,8 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                     @Override
                     public void accept(CharSequence charSequence) throws Exception {
                         if (!TextUtils.isEmpty(productCode.getEditableText())) {
-                            mPresenter.getProductDetailsRequest("826168449");
+                            mPresenter.getProductDetailsWithShopRequest(productCode.getEditableText().toString());
+                            //关闭软键盘
                             ((InputMethodManager)getSystemService(mContext.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(MainActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                         }
                     }
@@ -644,7 +663,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                 super.handleMessage(msg);
                 if (flag) {
                     String num = msg.obj.toString();
-                    mPresenter.getProductDetailsRequest("826168449");
+                    mPresenter.getProductDetailsRequest(num);
                     flag = false;
                 }
             }
@@ -882,9 +901,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                         if (result != null) {
                             LogUtils.loge("二维码解析====" + result);
                             if (result.contains("http")) {
-                                mPresenter.getProductDetailsWithScanRequest("http://weixin.qq.com/q/02gJC4lIIAdW210000g07x");
+//                                mPresenter.getProductDetailsWithScanRequest("http://weixin.qq.com/q/02gJC4lIIAdW210000g07x");
                             } else {
-                                mPresenter.getProductDetailsWithScanRequest("http://weixin.qq.com/q/02gJC4lIIAdW210000g07x");
+//                                mPresenter.getProductDetailsWithScanRequest("http://weixin.qq.com/q/02gJC4lIIAdW210000g07x");
                             }
                         } else {
                             ToastUtil.showShort(getString(R.string.scan_qrcode_failed));
@@ -915,13 +934,15 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         receivable.setText(String.valueOf(finalPrice));
         final_fact.setText(String.valueOf(finalPrice));
 
-        productCode.setText("");
-
+        //添加clothesId给集合，上传clothesId位数组时需要
+        ClothesIdBean clothesIdBean = new ClothesIdBean();
+        clothesIdBean.setClothes_ids(productDetails.get_id());
+        clothesIdList.add(clothesIdBean);
     }
 
-    //返回根据扫二维码获取的成衣情况
+    //返回根据商品编号获取的成衣情况
     @Override
-    public void returnGetProductDetailsWithScan(ProductDetails productDetails) {
+    public void returnGetProductDetailsWithShop(ProductDetails productDetails) {
         ToastUtil.showShort("OK");
         productDetailsList.add(productDetails);
         productAdapter.notifyDataSetChanged();
@@ -933,12 +954,30 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         finalPrice = factPrice * associatorDiscount / 10;
         receivable.setText(String.valueOf(finalPrice));
         final_fact.setText(String.valueOf(finalPrice));
+
+        //添加clothesId给集合，上传clothesId位数组时需要
+        ClothesIdBean clothesIdBean = new ClothesIdBean();
+        clothesIdBean.setClothes_ids(productDetails.get_id());
+        clothesIdList.add(clothesIdBean);
+
+        productCode.setText("");
+    }
+
+    //下单
+    @Override
+    public void returnGetProductOrder(OrderData orderData) {
+        AppConstant.ORDER_ID = orderData.get_id();
+        if (AppConstant.ORDER_ID != "" && AppConstant.AUTH_CODE != "") {
+            mPresenter.getPayResultInfoRequest(AppConstant.ORDER_ID, AppConstant.AUTH_CODE);
+        }else {
+            ToastUtil.showShort("下单失败了");
+        }
     }
 
     //微信支付
     @Override
-    public void returnGetPayResultInfo(WeixinPayData weixinPayData) {
-        ToastUtil.showShort(weixinPayData.getResult_code());
+    public void returnGetPayResultInfo(HttpResponse httpResponse) {
+//        ToastUtil.showShort("支付成功");
     }
 
     @Override
@@ -955,6 +994,8 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     public void showErrorTip(String msg) {
         flag = true;
         ToastUtil.showShort(msg);
+        //fixme Specific
+        productCode.setText("");
     }
 
     @Override

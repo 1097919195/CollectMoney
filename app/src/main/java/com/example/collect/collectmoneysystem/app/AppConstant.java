@@ -31,4 +31,12 @@ public class AppConstant {
     public static final String NO_BLE_FIND="NO_BLE_FIND";
     public static final String DISPLAY_GRIVITY = "DISPLAY_GRIVITY";
     public static final String CUSTOMER_EXIST = "422";
+
+    public static final String TOKEN = "TOKEN";
+    public static final String USERINFO_NAME = "USERINFO_NAME";
+    public static final String USERINFO_PASS = "USERINFO_PASS";
+
+    public static String ORDER_ID="";
+    public static String CLOTHES_ID="";
+    public static String AUTH_CODE="";
 }

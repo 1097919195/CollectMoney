@@ -9,13 +9,15 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="2">
         <ImageView
+            android:layout_gravity="center"
             android:id="@+id/sample_photo"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            tools:src="@mipmap/ic_launcher"/>
+            tools:src="@mipmap/ic_launcher"
+            android:scaleType="fitXY"/>
         <TextView
             android:id="@+id/part"
             android:layout_width="0dp"
