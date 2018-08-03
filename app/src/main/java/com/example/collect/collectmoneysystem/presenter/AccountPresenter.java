@@ -4,7 +4,7 @@ package com.example.collect.collectmoneysystem.presenter;
 import com.example.collect.collectmoneysystem.bean.LoginTokenData;
 import com.example.collect.collectmoneysystem.contract.AccountContract;
 import com.jaydenxiao.common.baserx.RxSubscriber;
-
+import com.jaydenxiao.common.baserx.RxSubscriber2;
 
 
 /**
@@ -20,7 +20,7 @@ public class AccountPresenter extends AccountContract.Presenter{
 //                        e ->{mView.showErrorTip(e.getMessage());}
 //                ));
 
-        mRxManage.add(mModel.getTokenSignIn(userName,passWord).subscribeWith(new RxSubscriber<LoginTokenData>(mContext, true) {
+        mRxManage.add(mModel.getTokenSignIn(userName,passWord).subscribeWith(new RxSubscriber2<LoginTokenData>(mContext, true) {
             @Override
             protected void _onNext(LoginTokenData httpResponse) {
                 mView.returnGetTokenSignIn(httpResponse);

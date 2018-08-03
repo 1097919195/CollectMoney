@@ -213,11 +213,12 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="14dp"
+                        android:layout_marginRight="14dp"
                         android:layout_weight="1"
                         android:background="@drawable/btn_white"
                         android:gravity="center"
                         android:padding="10dp"
-                        android:text="清空商品"
+                        android:text="清空全部商品"
                         android:textColor="@color/red"
                         android:textSize="@dimen/item_text_size_25" />
 
@@ -272,6 +273,7 @@
                     android:textSize="@dimen/item_text_size_25" />
 
                 <Button
+                    android:visibility="gone"
                     android:layout_marginTop="15dp"
                     android:layout_marginBottom="5dp"
                     android:id="@+id/add_goods"

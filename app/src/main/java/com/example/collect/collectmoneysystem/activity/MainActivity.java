@@ -55,9 +55,11 @@ import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jaydenxiao.common.base.BaseActivity;
 import com.jaydenxiao.common.base.BasePopupWindow;
+import com.jaydenxiao.common.baseapp.AppManager;
 import com.jaydenxiao.common.commonutils.ACache;
 import com.jaydenxiao.common.commonutils.ImageLoaderUtils;
 import com.jaydenxiao.common.commonutils.LogUtils;
+import com.jaydenxiao.common.commonutils.SPUtils;
 import com.jaydenxiao.common.commonutils.ToastUtil;
 
 import java.io.File;
@@ -173,6 +175,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     ArrayList<String> groupList = new ArrayList<>();
     List<SlideDelete> slideDeleteArrayList = new ArrayList<>();
     List<String> clothesIdList = new ArrayList<>();
+    boolean haveClothesIds = false;
 
     private View pop;
     private Button btn_left;
@@ -220,6 +223,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         initProductDetails();
         initDiscount();
         initRxBus();
+        //挂单功能取消，逻辑太麻烦了
+        register_account.setVisibility(View.GONE);
+        notificationButton.setVisibility(View.GONE);
     }
 
     private void initPopup() {
@@ -275,7 +281,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
     private void initDiscount() {
         associatorDiscount = (float) (Math.round(associatorDiscount * 10)) / 10;
-        discount.setText(String.valueOf(associatorDiscount));
+        discount.setText(String.valueOf((int)associatorDiscount));
     }
 
     private void initProductDetails() {
@@ -310,7 +316,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
                                 goodsCounts.setText(String.valueOf(productDetailsList.size()));
                                 goodsTotals.setText(String.valueOf(factPrice));
-                                finalPrice = factPrice * 9 / 10;
+                                finalPrice = factPrice * associatorDiscount / 10;
                                 receivable.setText(String.valueOf(finalPrice));
                                 final_fact.setText(String.valueOf(finalPrice));
 
@@ -413,6 +419,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                     payDialog = new MaterialDialog.Builder(this)
                             .title("订单金额为 "+getAmount.getEditableText().toString()+" 元")
                             .widgetColor(Color.BLUE)//输入框光标的颜色
+                            .contentColor(Color.WHITE)
                             .input("条码信息", "", new MaterialDialog.InputCallback() {
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
@@ -456,6 +463,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
             goodsTotals.setText("");
             receivable.setText("");
             final_fact.setText("0.0");
+            clothesIdList.clear();
         });
 
         register_account.setOnClickListener(new View.OnClickListener() {
@@ -496,6 +504,8 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                 goodsTotals.setText("");
                                 receivable.setText("");
                                 final_fact.setText("0.0");
+
+                                clothesIdList.clear();
 
                                 bundle.putSerializable(AppConstant.SEND_REGISTER_DETAILS_WITH_CHILD, child);
                                 bundle.putSerializable(AppConstant.SEND_REGISTER_DETAILS_WITH_GROUP, group);
@@ -616,7 +626,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     private MultipartBody.Part getSpecialBodyType(String clothesIds) {
         //创建RequestBody，其中multipart/form-data为编码类型
         RequestBody request = RequestBody.create(MediaType.parse("multipart/form-data"), clothesIds);
-        return MultipartBody.Part.createFormData("clothes_ids", clothesIds);
+        return MultipartBody.Part.createFormData("clothes_ids[]", clothesIds);
     }
 
     private void showPopupWindow() {
@@ -933,47 +943,76 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     @Override
     public void returnGetProductDetails(ProductDetails productDetails) {
         flag = true;
-        ToastUtil.showShort("OK");
-        productDetailsList.add(productDetails);
-        productAdapter.notifyDataSetChanged();
+        //防止重复添加同一件样衣
+        for (String clothesIds : clothesIdList) {
+            if (clothesIds.equals(productDetails.get_id())) {
+                haveClothesIds = true;
+            }
+        }
 
-        goodsCounts.setText(String.valueOf(productDetailsList.size()));
-        factPrice = factPrice + productDetails.getRetailPrice();
-        goodsTotals.setText(String.valueOf(factPrice));
+        if (!haveClothesIds) {
+            ToastUtil.showShort("OK");
+            productDetailsList.add(productDetails);
+            productAdapter.notifyDataSetChanged();
 
-        finalPrice = factPrice * associatorDiscount / 10;
-        receivable.setText(String.valueOf(finalPrice));
-        final_fact.setText(String.valueOf(finalPrice));
+            goodsCounts.setText(String.valueOf(productDetailsList.size()));
+            factPrice = factPrice + productDetails.getRetailPrice();
+            goodsTotals.setText(String.valueOf(factPrice));
+
+            finalPrice = factPrice * associatorDiscount / 10;
+            receivable.setText(String.valueOf(finalPrice));
+            final_fact.setText(String.valueOf(finalPrice));
 
 //        //添加clothesId给集合，上传clothesId位数组时需要
 //        ClothesIdBean clothesIdBean = new ClothesIdBean();
 //        clothesIdBean.setClothes_ids(productDetails.get_id());
 //        clothesIdList.add(clothesIdBean);
-        clothesIdList.add(productDetails.get_id());
+            clothesIdList.add(productDetails.get_id());
+        }else {
+            ToastUtil.showShort("该样衣已在列表中");
+        }
+
+        haveClothesIds = false;
+
     }
 
     //返回根据商品编号获取的成衣情况
     @Override
     public void returnGetProductDetailsWithShop(ProductDetails productDetails) {
-        ToastUtil.showShort("OK");
-        productDetailsList.add(productDetails);
-        productAdapter.notifyDataSetChanged();
+        flag = true;
+        //防止重复添加同一件样衣
+        for (String clothesIds : clothesIdList) {
+            if (productDetails.get_id() == clothesIds) {
+                haveClothesIds = true;
+            }
+        }
 
-        goodsCounts.setText(String.valueOf(productDetailsList.size()));
-        factPrice = factPrice + productDetails.getRetailPrice();
-        goodsTotals.setText(String.valueOf(factPrice));
+        if (!haveClothesIds){
+            ToastUtil.showShort("OK");
+            productDetailsList.add(productDetails);
+            productAdapter.notifyDataSetChanged();
 
-        finalPrice = factPrice * associatorDiscount / 10;
-        receivable.setText(String.valueOf(finalPrice));
-        final_fact.setText(String.valueOf(finalPrice));
+            goodsCounts.setText(String.valueOf(productDetailsList.size()));
+            factPrice = factPrice + productDetails.getRetailPrice();
+            goodsTotals.setText(String.valueOf(factPrice));
+
+            finalPrice = factPrice * associatorDiscount / 10;
+            receivable.setText(String.valueOf(finalPrice));
+            final_fact.setText(String.valueOf(finalPrice));
 
 //        //添加clothesId给集合，上传clothesId位数组时需要
 //        ClothesIdBean clothesIdBean = new ClothesIdBean();
 //        clothesIdBean.setClothes_ids(productDetails.get_id());
 //        clothesIdList.add(clothesIdBean);
-        clothesIdList.add(productDetails.get_id());
+            clothesIdList.add(productDetails.get_id());
 
-        productCode.setText("");
+            productCode.setText("");
+        }else {
+            ToastUtil.showShort("该样衣已在列表中");
+        }
+
+        haveClothesIds = false;
+
     }
 
     //下单
@@ -1010,6 +1049,15 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     @Override
     public void showErrorTip(String msg) {
         flag = true;
+        //用户信息的token过期时
+        if (msg == "token过期") {
+            SPUtils.setSharedStringData(AppApplication.getAppContext(),AppConstant.TOKEN,"");
+            AppManager.getAppManager().finishAllActivity();
+            Intent intent = new Intent(MainActivity.this, AccountActivity.class);
+            startActivity(intent);
+            ToastUtil.showShort("用户信息已经过期,请重新登录");
+            return;
+        }
         ToastUtil.showShort(msg);
         //fixme Specific
         productCode.setText("");
