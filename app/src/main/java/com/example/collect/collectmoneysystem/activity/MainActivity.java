@@ -124,9 +124,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     @BindView(R.id.goods_clear)
     TextView goods_clear;
     @BindView(R.id.goods_counts)
-    TextView goodsCounts;
+    TextView goodsKindCounts;
     @BindView(R.id.goods_totals)
-    TextView goodsTotals;
+    TextView goodsTotalsFee;
     @BindView(R.id.discount)
     TextView discount;
     @BindView(R.id.receivable)
@@ -262,11 +262,11 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
             productDetailsList = child.getMap().get(position);
             initProductDetails();
             factPrice = 0;
-            goodsCounts.setText(String.valueOf(productDetailsList.size()));
+            goodsKindCounts.setText(String.valueOf(productDetailsList.size()));
             for (ProductDetails list : productDetailsList) {
                 factPrice = factPrice + list.getRetailPrice();
             }
-            goodsTotals.setText(String.valueOf(factPrice));
+            goodsTotalsFee.setText(String.valueOf(factPrice));
 
             finalPrice = factPrice * associatorDiscount / 10;
             receivable.setText(String.valueOf(finalPrice));
@@ -297,7 +297,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                 SlideDelete slideDelete = helper.getView(R.id.slideDelete);
 
                 part.setText(productDetails.getName());
-                spec.setText(productDetails.getSpec());
+                spec.setText(String.valueOf(productDetails.getClothesIdCounts()+1));
                 size.setText(productDetails.getSize());
                 price.setText(String.valueOf(productDetails.getRetailPrice()));
                 ImageLoaderUtils.displaySmallPhoto(MainActivity.this, img, AppConstant.IMAGE_DOMAIN_NAME + productDetails.getImage());
@@ -310,12 +310,12 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                             .negativeText("取消")
                             .onPositive((dialog, which) -> {
                                 ToastUtil.showShort(String.valueOf(helper.getLayoutPosition()));
-                                factPrice = factPrice - productDetailsList.get(helper.getLayoutPosition()).getRetailPrice();
+                                factPrice = factPrice - productDetailsList.get(helper.getLayoutPosition()).getRetailPrice()*(productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts()+1);
                                 productDetailsList.remove(helper.getLayoutPosition());
                                 productAdapter.notifyDataSetChanged();
 
-                                goodsCounts.setText(String.valueOf(productDetailsList.size()));
-                                goodsTotals.setText(String.valueOf(factPrice));
+                                goodsKindCounts.setText(String.valueOf(productDetailsList.size()));
+                                goodsTotalsFee.setText(String.valueOf(factPrice));
                                 finalPrice = factPrice * associatorDiscount / 10;
                                 receivable.setText(String.valueOf(finalPrice));
                                 final_fact.setText(String.valueOf(finalPrice));
@@ -424,15 +424,17 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                                     LogUtils.loge("输入的是：" + input);
-                                    if (input.toString().length() > 0) {
+                                    if (input.toString().length() == 18) {
                                         AppConstant.AUTH_CODE = input.toString();
                                         MultipartBody.Part[] clothesIds = new MultipartBody.Part[clothesIdList.size()];
                                         for (int i=0;i<clothesIdList.size();i++) {
                                             clothesIds[i] = getSpecialBodyType(clothesIdList.get(i));
                                         }
                                         mPresenter.getProductOrderRequest(clothesIds);
-                                    }else {
-                                        ToastUtil.showShort("您还没有扫描客户信息！");
+                                    } else if (input.toString().length() == 0) {
+                                        ToastUtil.showShort("您还没有输入条码信息呢！");
+                                    } else {
+                                        ToastUtil.showShort("您输入的条码格式不正确！");
                                     }
 
                                 }
@@ -457,10 +459,10 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         goods_clear.setOnClickListener(v -> {
             productDetailsList = new ArrayList<>();
             initProductDetails();
-            goodsCounts.setText("");
+            goodsKindCounts.setText("");
             factPrice = 0;
             finalPrice = 0;
-            goodsTotals.setText("");
+            goodsTotalsFee.setText("");
             receivable.setText("");
             final_fact.setText("0.0");
             clothesIdList.clear();
@@ -498,10 +500,10 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                 ToastUtil.showShort("挂单成功");
                                 productDetailsList = new ArrayList<>();//需要重新建立一个集合来存放新的数据
                                 initProductDetails();
-                                goodsCounts.setText("");
+                                goodsKindCounts.setText("");
                                 factPrice = 0;
                                 finalPrice = 0;
-                                goodsTotals.setText("");
+                                goodsTotalsFee.setText("");
                                 receivable.setText("");
                                 final_fact.setText("0.0");
 
@@ -955,10 +957,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
             productDetailsList.add(productDetails);
             productAdapter.notifyDataSetChanged();
 
-            goodsCounts.setText(String.valueOf(productDetailsList.size()));
+            goodsKindCounts.setText(String.valueOf(productDetailsList.size()));
             factPrice = factPrice + productDetails.getRetailPrice();
-            goodsTotals.setText(String.valueOf(factPrice));
-
+            goodsTotalsFee.setText(String.valueOf(factPrice));
             finalPrice = factPrice * associatorDiscount / 10;
             receivable.setText(String.valueOf(finalPrice));
             final_fact.setText(String.valueOf(finalPrice));
@@ -969,7 +970,16 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 //        clothesIdList.add(clothesIdBean);
             clothesIdList.add(productDetails.get_id());
         }else {
-            ToastUtil.showShort("该样衣已在列表中");
+
+            int counts = productDetailsList.get(clothesIdList.indexOf(productDetails.get_id())).getClothesIdCounts();
+            productDetailsList.get(clothesIdList.indexOf(productDetails.get_id())).setClothesIdCounts(counts+1);
+            productAdapter.notifyDataSetChanged();
+            ToastUtil.showShort("该样衣已在列表中"+clothesIdList.indexOf(productDetails.get_id()));
+            factPrice = factPrice + productDetails.getRetailPrice();
+            goodsTotalsFee.setText(String.valueOf(factPrice));
+            finalPrice = factPrice * associatorDiscount / 10;
+            receivable.setText(String.valueOf(finalPrice));
+            final_fact.setText(String.valueOf(finalPrice));
         }
 
         haveClothesIds = false;
@@ -992,10 +1002,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
             productDetailsList.add(productDetails);
             productAdapter.notifyDataSetChanged();
 
-            goodsCounts.setText(String.valueOf(productDetailsList.size()));
+            goodsKindCounts.setText(String.valueOf(productDetailsList.size()));
             factPrice = factPrice + productDetails.getRetailPrice();
-            goodsTotals.setText(String.valueOf(factPrice));
-
+            goodsTotalsFee.setText(String.valueOf(factPrice));
             finalPrice = factPrice * associatorDiscount / 10;
             receivable.setText(String.valueOf(finalPrice));
             final_fact.setText(String.valueOf(finalPrice));
@@ -1008,7 +1017,15 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
             productCode.setText("");
         }else {
-            ToastUtil.showShort("该样衣已在列表中");
+            int counts = productDetailsList.get(clothesIdList.indexOf(productDetails.get_id())).getClothesIdCounts();
+            productDetailsList.get(clothesIdList.indexOf(productDetails.get_id())).setClothesIdCounts(counts+1);
+            productAdapter.notifyDataSetChanged();
+            ToastUtil.showShort("该样衣已在列表中"+clothesIdList.indexOf(productDetails.get_id()));
+            factPrice = factPrice + productDetails.getRetailPrice();
+            goodsTotalsFee.setText(String.valueOf(factPrice));
+            finalPrice = factPrice * associatorDiscount / 10;
+            receivable.setText(String.valueOf(finalPrice));
+            final_fact.setText(String.valueOf(finalPrice));
         }
 
         haveClothesIds = false;
