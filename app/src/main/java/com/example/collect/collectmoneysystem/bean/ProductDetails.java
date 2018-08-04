@@ -45,7 +45,7 @@ public class ProductDetails implements Serializable {
     private String style;//款式
     private String profile;//廓形
     private String image;//图片
-    private int clothesIdCounts;//记录当前重复的衣服数量
+    private int clothesIdCounts;//记录当前重复的衣服数量(记得数量+1)
 
     public int getClothesIdCounts() {
         return clothesIdCounts;

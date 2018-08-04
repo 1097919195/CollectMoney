@@ -2,10 +2,13 @@ package com.example.collect.collectmoneysystem.presenter;
 
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.bean.OrderData;
+import com.example.collect.collectmoneysystem.bean.PayOrderWithMultipartBean;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.jaydenxiao.common.baseapp.BaseApplication;
 import com.jaydenxiao.common.baserx.RxSubscriber2;
+
+import java.util.List;
 
 import okhttp3.MultipartBody;
 
@@ -46,8 +49,8 @@ public class MainPresenter extends MainContract.Presenter{
     }
 
     @Override
-    public void getProductOrderRequest(MultipartBody.Part[] clothesId) {
-        mRxManage.add(mModel.getProductOrder(clothesId).subscribeWith(new RxSubscriber2<OrderData>(mContext, true) {
+    public void getProductOrderRequest(String data) {
+        mRxManage.add(mModel.getProductOrder(data).subscribeWith(new RxSubscriber2<OrderData>(mContext, true) {
             @Override
             protected void _onNext(OrderData orderData) {
                 mView.returnGetProductOrder(orderData);
@@ -59,6 +62,21 @@ public class MainPresenter extends MainContract.Presenter{
             }
         }));
     }
+
+//    @Override
+//    public void getProductOrderRequest(MultipartBody.Part[] clothesId) {
+//        mRxManage.add(mModel.getProductOrder(clothesId).subscribeWith(new RxSubscriber2<OrderData>(mContext, true) {
+//            @Override
+//            protected void _onNext(OrderData orderData) {
+//                mView.returnGetProductOrder(orderData);
+//            }
+//
+//            @Override
+//            protected void _onError(String message) {
+//                mView.showErrorTip(message);
+//            }
+//        }));
+//    }
 
     @Override
     public void getPayResultInfoRequest(String orderId, String code) {

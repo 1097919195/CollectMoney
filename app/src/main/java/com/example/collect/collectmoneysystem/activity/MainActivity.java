@@ -42,6 +42,7 @@ import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.ClothesIdBean;
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.bean.OrderData;
+import com.example.collect.collectmoneysystem.bean.PayOrderWithMultipartBean;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
 import com.example.collect.collectmoneysystem.bean.SerializableChild;
 import com.example.collect.collectmoneysystem.bean.SerializableGroup;
@@ -176,6 +177,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     List<SlideDelete> slideDeleteArrayList = new ArrayList<>();
     List<String> clothesIdList = new ArrayList<>();
     boolean haveClothesIds = false;
+    List<Integer> clothesIdCount = new ArrayList<>();
 
     private View pop;
     private Button btn_left;
@@ -426,11 +428,27 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                     LogUtils.loge("输入的是：" + input);
                                     if (input.toString().length() == 18) {
                                         AppConstant.AUTH_CODE = input.toString();
-                                        MultipartBody.Part[] clothesIds = new MultipartBody.Part[clothesIdList.size()];
-                                        for (int i=0;i<clothesIdList.size();i++) {
-                                            clothesIds[i] = getSpecialBodyType(clothesIdList.get(i));
+
+                                        for (int i = 0; i<clothesIdList.size(); i++) {
+                                            clothesIdCount.add(productDetailsList.get(i).getClothesIdCounts()+1);
                                         }
-                                        mPresenter.getProductOrderRequest(clothesIds);
+
+                                        List<PayOrderWithMultipartBean> data = new ArrayList<>();
+                                        for (int i = 0; i<clothesIdList.size(); i++) {
+                                            PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i));
+                                            data.add(bean);
+                                        }
+                                        String s = (new Gson()).toJson(data);
+                                        LogUtils.loge(s);
+
+                                        //单纯的clothesIds数组
+//                                        MultipartBody.Part[] clothesIds = new MultipartBody.Part[clothesIdList.size()];
+//                                        for (int i=0;i<clothesIdList.size();i++) {
+//                                            clothesIds[i] = getSpecialBodyType(clothesIdList.get(i));
+//                                        }
+//                                        mPresenter.getProductOrderRequest(clothesIds);
+
+                                        mPresenter.getProductOrderRequest(s);
                                     } else if (input.toString().length() == 0) {
                                         ToastUtil.showShort("您还没有输入条码信息呢！");
                                     } else {

@@ -123,11 +123,18 @@ public interface ApiService {
             @Field("c_num") String content
     );
 
+//    //订单下单
+//    @Multipart
+//    @POST("api/shop/orders")
+//    Observable<HttpResponse<OrderData>> productOrder(
+//            @Part MultipartBody.Part[] clothesIds
+//    );
+
     //订单下单
-    @Multipart
+    @FormUrlEncoded
     @POST("api/shop/orders")
     Observable<HttpResponse<OrderData>> productOrder(
-            @Part MultipartBody.Part[] clothesIds
+            @Field("clothes") String data
     );
 
     //微信支付后台接口
