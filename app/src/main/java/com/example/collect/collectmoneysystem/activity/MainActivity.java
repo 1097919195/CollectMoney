@@ -451,8 +451,31 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                         mPresenter.getProductOrderRequest(s);
                                     } else if (input.toString().length() == 0) {
                                         ToastUtil.showShort("您还没有输入条码信息呢！");
-                                    } else {
-                                        ToastUtil.showShort("您输入的条码格式不正确！");
+                                    } else if (input.toString().length() >= 36) {
+                                        AppConstant.AUTH_CODE = input.toString().substring(0,18);
+
+                                        for (int i = 0; i<clothesIdList.size(); i++) {
+                                            clothesIdCount.add(productDetailsList.get(i).getClothesIdCounts()+1);
+                                        }
+
+                                        List<PayOrderWithMultipartBean> data = new ArrayList<>();
+                                        for (int i = 0; i<clothesIdList.size(); i++) {
+                                            PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i));
+                                            data.add(bean);
+                                        }
+                                        String s = (new Gson()).toJson(data);
+                                        LogUtils.loge(s);
+
+                                        //单纯的clothesIds数组
+//                                        MultipartBody.Part[] clothesIds = new MultipartBody.Part[clothesIdList.size()];
+//                                        for (int i=0;i<clothesIdList.size();i++) {
+//                                            clothesIds[i] = getSpecialBodyType(clothesIdList.get(i));
+//                                        }
+//                                        mPresenter.getProductOrderRequest(clothesIds);
+
+                                        mPresenter.getProductOrderRequest(s);
+                                    }else {
+                                        ToastUtil.showShort("您输入的条码长度不对！");
                                     }
 
                                 }
