@@ -419,7 +419,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
             if (clothesIdList.size() > 0) {
                 if (Float.valueOf(getAmount.getEditableText().toString())>0) {
                     payDialog = new MaterialDialog.Builder(this)
-                            .title("订单金额为 "+getAmount.getEditableText().toString()+" 元")
+                            .title("当前订单金额为 "+getAmount.getEditableText().toString()+" 元"+"(请以实际后台返回的金额为准)")
                             .widgetColor(Color.BLUE)//输入框光标的颜色
                             .contentColor(Color.WHITE)
                             .input("条码信息", "", new MaterialDialog.InputCallback() {

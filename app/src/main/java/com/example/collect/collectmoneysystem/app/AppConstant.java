@@ -36,6 +36,6 @@ public class AppConstant {
     public static final String USERINFO_PASS = "USERINFO_PASS";
 
     public static String ORDER_ID = "";
-    public static int TOTAL_FEE = 0;
+    public static float TOTAL_FEE = 0;
     public static String AUTH_CODE = "";
 }

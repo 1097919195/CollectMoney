@@ -25,7 +25,7 @@ public class OrderData {
     private String shop_id;
     private int status;
     private String pay_type;
-    private int total_fee;
+    private float total_fee;
     private String trade_no;
     private String updated_at;
     private String created_at;
@@ -64,11 +64,11 @@ public class OrderData {
         this.pay_type = pay_type;
     }
 
-    public int getTotal_fee() {
+    public float getTotal_fee() {
         return total_fee;
     }
 
-    public void setTotal_fee(int total_fee) {
+    public void setTotal_fee(float total_fee) {
         this.total_fee = total_fee;
     }
 
