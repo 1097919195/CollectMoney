@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mTvDelete"
+    android:id="@+id/increase"
     android:layout_width="110dp"
     android:layout_height="60dp"
-    android:background="#ff0000"
+    android:background="@color/colorPrimary"
     android:gravity="center"
-    android:text="删除"
+    android:text="加"
     android:textColor="#ffffff"
     android:textSize="22dp" />

@@ -52,6 +52,7 @@ import com.example.collect.collectmoneysystem.model.MainModel;
 import com.example.collect.collectmoneysystem.presenter.MainPresenter;
 import com.example.collect.collectmoneysystem.widget.SlideDelete;
 import com.example.collect.collectmoneysystem.widget.SlideDelete.OnSlideDeleteListener;
+import com.example.collect.collectmoneysystem.widget.SlideDeleteWith;
 import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jaydenxiao.common.base.BaseActivity;
@@ -174,7 +175,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     SerializableGroup group = new SerializableGroup();
     List<List<ProductDetails>> childList = new ArrayList<>();
     ArrayList<String> groupList = new ArrayList<>();
-    List<SlideDelete> slideDeleteArrayList = new ArrayList<>();
+    List<SlideDeleteWith> slideDeleteArrayList = new ArrayList<>();
     List<String> clothesIdList = new ArrayList<>();
     boolean haveClothesIds = false;
     List<Integer> clothesIdCount = new ArrayList<>();
@@ -296,10 +297,12 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                 TextView price = helper.getView(R.id.price);
                 ImageView img = helper.getView(R.id.sample_photo);
                 TextView delete = helper.getView(R.id.mTvDelete);
-                SlideDelete slideDelete = helper.getView(R.id.slideDelete);
+                TextView minus = helper.getView(R.id.decrease);
+                TextView plus = helper.getView(R.id.increase);
+                SlideDeleteWith slideDelete = helper.getView(R.id.slideDelete);
 
                 part.setText(productDetails.getName());
-                spec.setText(String.valueOf(productDetails.getClothesIdCounts()+1));
+                spec.setText(String.valueOf(productDetails.getClothesIdCounts()));
                 size.setText(productDetails.getSize());
                 price.setText(String.valueOf(productDetails.getRetailPrice()));
                 ImageLoaderUtils.displaySmallPhoto(MainActivity.this, img, AppConstant.IMAGE_DOMAIN_NAME + productDetails.getImage());
@@ -312,7 +315,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                             .negativeText("取消")
                             .onPositive((dialog, which) -> {
                                 ToastUtil.showShort(String.valueOf(helper.getLayoutPosition()));
-                                factPrice = factPrice - productDetailsList.get(helper.getLayoutPosition()).getRetailPrice()*(productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts()+1);
+                                factPrice = factPrice - productDetailsList.get(helper.getLayoutPosition()).getRetailPrice()*(productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts());
                                 productDetailsList.remove(helper.getLayoutPosition());
                                 productAdapter.notifyDataSetChanged();
 
@@ -329,16 +332,46 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                     delateDialog.show();
                 });
 
-                slideDelete.setOnSlideDeleteListener(new OnSlideDeleteListener() {
+                //商品加一
+                plus.setOnClickListener(v->{
+                    int counts = productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts();
+                    productDetailsList.get(helper.getLayoutPosition()).setClothesIdCounts(counts+1);
+                    productAdapter.notifyDataSetChanged();
+                    ToastUtil.showShort("该样衣已在列表中"+helper.getLayoutPosition());
+                    factPrice = factPrice + productDetails.getRetailPrice();
+                    goodsTotalsFee.setText(String.valueOf(factPrice));
+                    finalPrice = factPrice * associatorDiscount / 10;
+                    receivable.setText(String.valueOf(finalPrice));
+                    final_fact.setText(String.valueOf(finalPrice));
+                });
+
+                //商品减一
+                minus.setOnClickListener(v->{
+                    int counts = productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts();
+                    productDetailsList.get(helper.getLayoutPosition()).setClothesIdCounts(counts-1);
+                    if (productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts() < 1) {
+                        productDetailsList.remove(helper.getLayoutPosition());
+                        clothesIdList.remove(helper.getLayoutPosition());
+                    }
+                    productAdapter.notifyDataSetChanged();
+                    ToastUtil.showShort("该样衣已在列表中"+helper.getLayoutPosition());
+                    factPrice = factPrice - productDetails.getRetailPrice();
+                    goodsTotalsFee.setText(String.valueOf(factPrice));
+                    finalPrice = factPrice * associatorDiscount / 10;
+                    receivable.setText(String.valueOf(finalPrice));
+                    final_fact.setText(String.valueOf(finalPrice));
+                });
+
+                slideDelete.setOnSlideDeleteListener(new SlideDeleteWith.OnSlideDeleteListener() {
                     @Override
-                    public void onOpen(SlideDelete slideDelete) {
+                    public void onOpen(SlideDeleteWith slideDelete) {
                         closeOtherItem();
                         slideDeleteArrayList.add(slideDelete);
                         slideDelete.isShowDelete(true);
                     }
 
                     @Override
-                    public void onClose(SlideDelete slideDelete) {
+                    public void onClose(SlideDeleteWith slideDelete) {
                         slideDeleteArrayList.remove(slideDelete);
                     }
                 });
@@ -393,9 +426,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
     private void closeOtherItem(){
         // 采用Iterator的原因是for是线程不安全的，迭代器是线程安全的
-        ListIterator<SlideDelete> slideDeleteListIterator = slideDeleteArrayList.listIterator();
+        ListIterator<SlideDeleteWith> slideDeleteListIterator = slideDeleteArrayList.listIterator();
         while(slideDeleteListIterator.hasNext()){
-            SlideDelete slideDelete = slideDeleteListIterator.next();
+            SlideDeleteWith slideDelete = slideDeleteListIterator.next();
             slideDelete.isShowDelete(false);
         }
         slideDeleteArrayList.clear();
@@ -430,7 +463,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                         AppConstant.AUTH_CODE = input.toString();
 
                                         for (int i = 0; i<clothesIdList.size(); i++) {
-                                            clothesIdCount.add(productDetailsList.get(i).getClothesIdCounts()+1);
+                                            clothesIdCount.add(productDetailsList.get(i).getClothesIdCounts());
                                         }
 
                                         List<PayOrderWithMultipartBean> data = new ArrayList<>();
@@ -455,7 +488,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                         AppConstant.AUTH_CODE = input.toString().substring(0,18);
 
                                         for (int i = 0; i<clothesIdList.size(); i++) {
-                                            clothesIdCount.add(productDetailsList.get(i).getClothesIdCounts()+1);
+                                            clothesIdCount.add(productDetailsList.get(i).getClothesIdCounts());
                                         }
 
                                         List<PayOrderWithMultipartBean> data = new ArrayList<>();
@@ -995,6 +1028,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
         if (!haveClothesIds) {
             ToastUtil.showShort("OK");
+            productDetails.setClothesIdCounts(1);
             productDetailsList.add(productDetails);
             productAdapter.notifyDataSetChanged();
 
@@ -1040,6 +1074,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
         if (!haveClothesIds){
             ToastUtil.showShort("OK");
+            productDetails.setClothesIdCounts(1);
             productDetailsList.add(productDetails);
             productAdapter.notifyDataSetChanged();
 

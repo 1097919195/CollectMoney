@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     >
-    <com.example.collect.collectmoneysystem.widget.SlideDelete
+    <com.example.collect.collectmoneysystem.widget.SlideDeleteWith
         android:id="@+id/slideDelete"
         android:layout_width="match_parent"
         android:layout_height="60dp">
@@ -14,7 +14,9 @@
 
         <!--删除部分-->
         <include layout="@layout/item_slide_delete"/>
+        <include layout="@layout/item_slide_minus"/>
+        <include layout="@layout/item_slide_plus"/>
 
-    </com.example.collect.collectmoneysystem.widget.SlideDelete>
+    </com.example.collect.collectmoneysystem.widget.SlideDeleteWith>
 
 </RelativeLayout>
