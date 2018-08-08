@@ -436,6 +436,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
     private MaterialDialog dialog;
     private void initListener() {
+        //清除计算器所有内容
         clearAll.setOnClickListener(v -> {
             getAmount.setText("0");
 //            if (dialog != null) {
@@ -447,6 +448,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 //            }
         });
 
+        //结算提交
         commitNum.setOnClickListener(v -> {
 //            startActivity(TestActivity.class);
             if (clothesIdList.size() > 0) {
@@ -526,22 +528,33 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
         });
 
+        //模拟刷卡的按钮
         addGoods.setOnClickListener(v ->
                 mPresenter.getProductDetailsRequest("3519171754")
         );
 
+        //清除所有商品
         goods_clear.setOnClickListener(v -> {
-            productDetailsList = new ArrayList<>();
-            initProductDetails();
-            goodsKindCounts.setText("");
-            factPrice = 0;
-            finalPrice = 0;
-            goodsTotalsFee.setText("");
-            receivable.setText("");
-            final_fact.setText("0.0");
-            clothesIdList.clear();
+            new MaterialDialog.Builder(this)
+                    .title("确认清空当前所有的商品吗")
+                    .positiveText("确定")
+                    .onPositive((d, i) -> {
+                        productDetailsList = new ArrayList<>();
+                        initProductDetails();
+                        goodsKindCounts.setText("");
+                        factPrice = 0;
+                        finalPrice = 0;
+                        goodsTotalsFee.setText("");
+                        receivable.setText("");
+                        final_fact.setText("0.0");
+                        clothesIdList.clear();
+                    })
+                    .negativeColor(getResources().getColor(R.color.red))
+                    .negativeText("点错了")
+                    .show();
         });
 
+        //挂单
         register_account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -598,6 +611,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
             }
         });
 
+        //挂单详情按钮点击
         notificationButton.setOnClickListener(v -> {
             if (registerCount >= 1) {
                 Intent intent = new Intent(MainActivity.this, RegisterDetalisActivity.class);
@@ -608,6 +622,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
             }
         });
 
+        //二维码
         scan_add_goods.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -662,7 +677,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                 });
 
         RxTextView.textChanges(productCode)
-                .debounce(200,TimeUnit.MILLISECONDS)
+                .debounce(1000,TimeUnit.MILLISECONDS)
                 .subscribe(new Consumer<CharSequence>() {
                     @Override
                     public void accept(CharSequence charSequence) throws Exception {
@@ -1067,12 +1082,12 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         flag = true;
         //防止重复添加同一件样衣
         for (String clothesIds : clothesIdList) {
-            if (productDetails.get_id() == clothesIds) {
+            if (clothesIds.equals(productDetails.get_id())) {
                 haveClothesIds = true;
             }
         }
 
-        if (!haveClothesIds){
+        if (!haveClothesIds) {
             ToastUtil.showShort("OK");
             productDetails.setClothesIdCounts(1);
             productDetailsList.add(productDetails);
@@ -1093,6 +1108,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
             productCode.setText("");
         }else {
+
             int counts = productDetailsList.get(clothesIdList.indexOf(productDetails.get_id())).getClothesIdCounts();
             productDetailsList.get(clothesIdList.indexOf(productDetails.get_id())).setClothesIdCounts(counts+1);
             productAdapter.notifyDataSetChanged();
@@ -1102,6 +1118,8 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
             finalPrice = factPrice * associatorDiscount / 10;
             receivable.setText(String.valueOf(finalPrice));
             final_fact.setText(String.valueOf(finalPrice));
+
+            productCode.setText("");
         }
 
         haveClothesIds = false;

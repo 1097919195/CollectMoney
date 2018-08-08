@@ -1,6 +1,7 @@
 package com.example.collect.collectmoneysystem.widget;
 
 import android.content.Context;
+import android.support.v13.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -291,17 +292,19 @@ public class SlideDeleteWith extends ViewGroup {
             // 而 invalidate 通过调用draw()等方法之后最后还是还是会调用 computeScroll 这个方法
             // 所以，使用 smoothSlideViewTo 做过渡动画需要结合  invalidate方法 和 computeScroll方法
             // smoothSlideViewTo的动画执行时间没有暴露的参数可以设置，但是这个时间是google给我们经过大量计算给出合理时间
-            viewDragHelper.smoothSlideViewTo(mContent, -mDeleteWidth - mMinusWidth - mPlusWidth, 0);
+
             viewDragHelper.smoothSlideViewTo(mDelete, -mDeleteWidth - mMinusWidth - mPlusWidth + mContentWidth, 0);
             viewDragHelper.smoothSlideViewTo(mMinus, -mMinusWidth - mPlusWidth + mContentWidth, 0);
             viewDragHelper.smoothSlideViewTo(mPlus, -mPlusWidth + mContentWidth, 0);
+            viewDragHelper.smoothSlideViewTo(mContent, -mDeleteWidth - mMinusWidth - mPlusWidth, 0);
         } else {
             //mContent.layout(0,0,mContentWidth,mContentHeight);
             //mDelete.layout(mContentWidth, 0, mContentWidth + mDeleteWidth, mDeleteHeight);
-            viewDragHelper.smoothSlideViewTo(mContent, 0, 0);
+
             viewDragHelper.smoothSlideViewTo(mDelete, mContentWidth, 0);
             viewDragHelper.smoothSlideViewTo(mMinus, mContentWidth + mDeleteWidth, 0);
             viewDragHelper.smoothSlideViewTo(mPlus, mContentWidth + mDeleteWidth + mMinusWidth, 0);
+            viewDragHelper.smoothSlideViewTo(mContent, 0, 0);
         }
         invalidate();
     }
@@ -311,6 +314,7 @@ public class SlideDeleteWith extends ViewGroup {
         //super.computeScroll();
         // 把捕获的View适当的时间移动，其实也可以理解为 smoothSlideViewTo 的模拟过程还没完成
         if (viewDragHelper.continueSettling(true)) {
+            ViewCompat.postInvalidateOnAnimation(this);//刷新带有动画
             invalidate();
         }
         // 其实这个动画过渡的过程大概在怎么走呢？
