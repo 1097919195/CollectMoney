@@ -44,7 +44,7 @@ public class ProductDetails implements Serializable {
     private String fabric;//布料
     private String style;//款式
     private String profile;//廓形
-    private String image;//图片
+    private ImagesBean image;//图片
     private int clothesIdCounts;//记录当前重复的衣服数量(记得数量+1)
 
     public int getClothesIdCounts() {
@@ -151,12 +151,38 @@ public class ProductDetails implements Serializable {
         this.profile = profile;
     }
 
-    public String getImage() {
+    public ImagesBean getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(ImagesBean image) {
         this.image = image;
+    }
+
+    public static class ImagesBean {
+        /**
+         * path : https://ts.npclo.com/images/goods/goods_1532932887_NvawgTHxqg.jpg
+         * relative_path : /images/goods/goods_1532932887_NvawgTHxqg.jpg
+         */
+
+        private String path;
+        private String relative_path;
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public String getRelative_path() {
+            return relative_path;
+        }
+
+        public void setRelative_path(String relative_path) {
+            this.relative_path = relative_path;
+        }
     }
 
 }

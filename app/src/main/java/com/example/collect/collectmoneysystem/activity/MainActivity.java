@@ -305,7 +305,11 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                 spec.setText(String.valueOf(productDetails.getClothesIdCounts()));
                 size.setText(productDetails.getSize());
                 price.setText(String.valueOf(productDetails.getRetailPrice()));
-                ImageLoaderUtils.displaySmallPhoto(MainActivity.this, img, AppConstant.IMAGE_DOMAIN_NAME + productDetails.getImage());
+                if (productDetails.getImage() != null) {
+                    ImageLoaderUtils.displaySmallPhoto(MainActivity.this, img, AppConstant.IMAGE_DOMAIN_NAME + productDetails.getImage().getRelative_path());
+                } else {
+                    img.setImageResource(R.mipmap.background);
+                }
 
                 delete.setOnClickListener(v->{
                     delateDialog = new MaterialDialog.Builder(MainActivity.this)
