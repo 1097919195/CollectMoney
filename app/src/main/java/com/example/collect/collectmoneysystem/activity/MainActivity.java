@@ -360,6 +360,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                     if (productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts() < 1) {
                         productDetailsList.remove(helper.getLayoutPosition());
                         clothesIdList.remove(helper.getLayoutPosition());
+                        goodsKindCounts.setText(String.valueOf(productDetailsList.size()));//加的时候不用管，减的时候需要
                     }
                     productAdapter.notifyDataSetChanged();
                     ToastUtil.showShort("该样衣已在列表中"+helper.getLayoutPosition());
@@ -471,11 +472,10 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                     //这里注意要作判断处理，ActionDown、ActionUp都会回调到这里，不作处理的话就会调用两次
                                     if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction()) {
                                         //处理事件
-                                        //todo
-//                                        payDialog.getBuilder().input(DialogAction.POSITIVE);
-                                        LogUtils.loge("asdf"+payDialog.getInputEditText());
-                                        if (payDialog.getInputEditText().toString().length() == 18) {
-                                            AppConstant.AUTH_CODE = payDialog.getInputEditText().toString();
+                                        //todo 可以精简一下
+                                        LogUtils.loge("one code"+payDialog.getInputEditText().getEditableText());
+                                        if (payDialog.getInputEditText().getEditableText().length() == 18) {
+                                            AppConstant.AUTH_CODE = payDialog.getInputEditText().getEditableText().toString();
 
                                             for (int i = 0; i<clothesIdList.size(); i++) {
                                                 clothesIdCount.add(productDetailsList.get(i).getClothesIdCounts());
@@ -497,31 +497,8 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 //                                        mPresenter.getProductOrderRequest(clothesIds);
 
                                             mPresenter.getProductOrderRequest(s);
-                                        } else if (payDialog.getInputEditText().toString().length() == 0) {
+                                        } else if (payDialog.getInputEditText().getEditableText().length() == 0) {
                                             ToastUtil.showShort("您还没有输入条码信息呢！");
-                                        } else if (payDialog.getInputEditText().toString().length() >= 36) {
-                                            AppConstant.AUTH_CODE = payDialog.getInputEditText().toString().substring(0,18);
-
-                                            for (int i = 0; i<clothesIdList.size(); i++) {
-                                                clothesIdCount.add(productDetailsList.get(i).getClothesIdCounts());
-                                            }
-
-                                            List<PayOrderWithMultipartBean> data = new ArrayList<>();
-                                            for (int i = 0; i<clothesIdList.size(); i++) {
-                                                PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i));
-                                                data.add(bean);
-                                            }
-                                            String s = (new Gson()).toJson(data);
-                                            LogUtils.loge(s);
-
-                                            //单纯的clothesIds数组
-//                                        MultipartBody.Part[] clothesIds = new MultipartBody.Part[clothesIdList.size()];
-//                                        for (int i=0;i<clothesIdList.size();i++) {
-//                                            clothesIds[i] = getSpecialBodyType(clothesIdList.get(i));
-//                                        }
-//                                        mPresenter.getProductOrderRequest(clothesIds);
-
-                                            mPresenter.getProductOrderRequest(s);
                                         }else {
                                             ToastUtil.showShort("您输入的条码长度不对！");
                                         }
@@ -1209,6 +1186,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         if (AppConstant.ORDER_ID != "" && AppConstant.AUTH_CODE != "") {
             mPresenter.getPayResultInfoRequest(AppConstant.ORDER_ID, AppConstant.AUTH_CODE);
             AppConstant.AUTH_CODE = "";
+            getAmount.setText("0");
         }else {
             ToastUtil.showShort("下单失败了");
         }
@@ -1221,6 +1199,13 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         productDetailsList.clear();
         clothesIdList.clear();
         productAdapter.notifyDataSetChanged();
+
+        goodsKindCounts.setText("");
+        factPrice = 0;
+        finalPrice = 0;
+        goodsTotalsFee.setText("");
+        receivable.setText("");
+        final_fact.setText("0.0");
     }
 
     @Override

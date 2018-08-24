@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CollectMoney.iml" filepath="$PROJECT_DIR$/CollectMoney.iml" />
+      <module fileurl="file://D:\gitDown\CollectMoneySystem\CollectMoney.iml" filepath="D:\gitDown\CollectMoneySystem\CollectMoney.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CollectMoneySystem.iml" filepath="$PROJECT_DIR$/CollectMoneySystem.iml" />
       <module fileurl="file://D:\gitdownProgram\CollectMoney\CollectMoneySystem.iml" filepath="D:\gitdownProgram\CollectMoney\CollectMoneySystem.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/common/common.iml" filepath="$PROJECT_DIR$/library/common/common.iml" />
