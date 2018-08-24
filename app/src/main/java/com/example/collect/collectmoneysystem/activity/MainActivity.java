@@ -2,6 +2,7 @@ package com.example.collect.collectmoneysystem.activity;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -20,6 +21,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aspsine.irecyclerview.IRecyclerView;
 import com.aspsine.irecyclerview.universaladapter.ViewHolderHelper;
@@ -50,6 +53,7 @@ import com.example.collect.collectmoneysystem.camera.CaptureActivity;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.example.collect.collectmoneysystem.model.MainModel;
 import com.example.collect.collectmoneysystem.presenter.MainPresenter;
+import com.example.collect.collectmoneysystem.utils.MaterialDialogUtils;
 import com.example.collect.collectmoneysystem.widget.SlideDelete;
 import com.example.collect.collectmoneysystem.widget.SlideDelete.OnSlideDeleteListener;
 import com.example.collect.collectmoneysystem.widget.SlideDeleteWith;
@@ -459,8 +463,75 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                 if (Float.valueOf(getAmount.getEditableText().toString())>0) {
                     payDialog = new MaterialDialog.Builder(this)
                             .title("当前订单金额为 "+getAmount.getEditableText().toString()+" 元"+"(请以实际后台返回的金额为准)")
-                            .widgetColor(Color.BLUE)//输入框光标的颜色
+                            .widgetColor(Color.WHITE)//输入框光标的颜色
                             .contentColor(Color.WHITE)
+                            .keyListener(new DialogInterface.OnKeyListener() {
+                                @Override
+                                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                                    //这里注意要作判断处理，ActionDown、ActionUp都会回调到这里，不作处理的话就会调用两次
+                                    if (KeyEvent.KEYCODE_ENTER == keyCode && KeyEvent.ACTION_DOWN == event.getAction()) {
+                                        //处理事件
+                                        //todo
+//                                        payDialog.getBuilder().input(DialogAction.POSITIVE);
+                                        LogUtils.loge("asdf"+payDialog.getInputEditText());
+                                        if (payDialog.getInputEditText().toString().length() == 18) {
+                                            AppConstant.AUTH_CODE = payDialog.getInputEditText().toString();
+
+                                            for (int i = 0; i<clothesIdList.size(); i++) {
+                                                clothesIdCount.add(productDetailsList.get(i).getClothesIdCounts());
+                                            }
+
+                                            List<PayOrderWithMultipartBean> data = new ArrayList<>();
+                                            for (int i = 0; i<clothesIdList.size(); i++) {
+                                                PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i));
+                                                data.add(bean);
+                                            }
+                                            String s = (new Gson()).toJson(data);
+                                            LogUtils.loge(s);
+
+                                            //单纯的clothesIds数组
+//                                        MultipartBody.Part[] clothesIds = new MultipartBody.Part[clothesIdList.size()];
+//                                        for (int i=0;i<clothesIdList.size();i++) {
+//                                            clothesIds[i] = getSpecialBodyType(clothesIdList.get(i));
+//                                        }
+//                                        mPresenter.getProductOrderRequest(clothesIds);
+
+                                            mPresenter.getProductOrderRequest(s);
+                                        } else if (payDialog.getInputEditText().toString().length() == 0) {
+                                            ToastUtil.showShort("您还没有输入条码信息呢！");
+                                        } else if (payDialog.getInputEditText().toString().length() >= 36) {
+                                            AppConstant.AUTH_CODE = payDialog.getInputEditText().toString().substring(0,18);
+
+                                            for (int i = 0; i<clothesIdList.size(); i++) {
+                                                clothesIdCount.add(productDetailsList.get(i).getClothesIdCounts());
+                                            }
+
+                                            List<PayOrderWithMultipartBean> data = new ArrayList<>();
+                                            for (int i = 0; i<clothesIdList.size(); i++) {
+                                                PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i));
+                                                data.add(bean);
+                                            }
+                                            String s = (new Gson()).toJson(data);
+                                            LogUtils.loge(s);
+
+                                            //单纯的clothesIds数组
+//                                        MultipartBody.Part[] clothesIds = new MultipartBody.Part[clothesIdList.size()];
+//                                        for (int i=0;i<clothesIdList.size();i++) {
+//                                            clothesIds[i] = getSpecialBodyType(clothesIdList.get(i));
+//                                        }
+//                                        mPresenter.getProductOrderRequest(clothesIds);
+
+                                            mPresenter.getProductOrderRequest(s);
+                                        }else {
+                                            ToastUtil.showShort("您输入的条码长度不对！");
+                                        }
+                                        payDialog.dismiss();
+                                        return true;
+                                    }
+                                    return false;
+
+                                }
+                            })
                             .input("条码信息", "", new MaterialDialog.InputCallback() {
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
@@ -1137,6 +1208,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         AppConstant.TOTAL_FEE = orderData.getTotal_fee();
         if (AppConstant.ORDER_ID != "" && AppConstant.AUTH_CODE != "") {
             mPresenter.getPayResultInfoRequest(AppConstant.ORDER_ID, AppConstant.AUTH_CODE);
+            AppConstant.AUTH_CODE = "";
         }else {
             ToastUtil.showShort("下单失败了");
         }
