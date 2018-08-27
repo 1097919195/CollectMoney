@@ -44,7 +44,7 @@ public class ProductDetails implements Serializable {
     private String fabric;//布料
     private String style;//款式
     private String profile;//廓形
-    private ImagesBean image;//图片
+    private List<ImagesBean> image;//图片
     private int clothesIdCounts;//记录当前重复的衣服数量(记得数量+1)
 
     public int getClothesIdCounts() {
@@ -151,11 +151,11 @@ public class ProductDetails implements Serializable {
         this.profile = profile;
     }
 
-    public ImagesBean getImage() {
+    public List<ImagesBean> getImage() {
         return image;
     }
 
-    public void setImage(ImagesBean image) {
+    public void setImage(List<ImagesBean> image) {
         this.image = image;
     }
 
