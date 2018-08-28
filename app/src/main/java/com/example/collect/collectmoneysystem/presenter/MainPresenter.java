@@ -23,7 +23,7 @@ public class MainPresenter extends MainContract.Presenter{
         mRxManage.add(mModel.getProductDetails(num).subscribeWith(new RxSubscriber2<ProductDetails>(mContext, true) {
             @Override
             protected void _onNext(ProductDetails productDetails) {
-                mView.returnGetProductDetails(productDetails);
+                mView.returnGetProductDetails(productDetails,num);
             }
 
             @Override

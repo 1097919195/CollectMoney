@@ -132,10 +132,10 @@ public interface ApiService {
 //    );
 
     //订单下单
-    @FormUrlEncoded
+    @Multipart
     @POST("api/shop/orders")
     Observable<HttpResponse<OrderData>> productOrder(
-            @Field("clothes") String data
+            @PartMap Map<String, RequestBody> map
     );
 
     //微信支付后台接口

@@ -185,7 +185,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     List<SlideDeleteWith> slideDeleteArrayList = new ArrayList<>();
     List<String> clothesIdList = new ArrayList<>();
     boolean haveClothesIds = false;
+    boolean haveCard = false;
     List<Integer> clothesIdCount = new ArrayList<>();
+    List<String> cards = new ArrayList<>();
 
     private View pop;
     private Button btn_left;
@@ -486,16 +488,16 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
                                             List<PayOrderWithMultipartBean> data = new ArrayList<>();
                                             for (int i = 0; i<clothesIdList.size(); i++) {
-                                                PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i));
+                                                PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i),cards);
                                                 data.add(bean);
                                             }
                                             String s = (new Gson()).toJson(data);
                                             LogUtils.loge(s);
 
                                             //单纯的clothesIds数组
-//                                        MultipartBody.Part[] clothesIds = new MultipartBody.Part[clothesIdList.size()];
-//                                        for (int i=0;i<clothesIdList.size();i++) {
-//                                            clothesIds[i] = getSpecialBodyType(clothesIdList.get(i));
+//                                        MultipartBody.Part[] cardNums = new MultipartBody.Part[cards.size()];
+//                                        for (int i=0;i<cards.size();i++) {
+//                                            cardNums[i] = getSpecialBodyType(cards.get(i));
 //                                        }
 //                                        mPresenter.getProductOrderRequest(clothesIds);
 
@@ -525,7 +527,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
                                         List<PayOrderWithMultipartBean> data = new ArrayList<>();
                                         for (int i = 0; i<clothesIdList.size(); i++) {
-                                            PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i));
+                                            PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i),cards);
                                             data.add(bean);
                                         }
                                         String s = (new Gson()).toJson(data);
@@ -550,7 +552,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
                                         List<PayOrderWithMultipartBean> data = new ArrayList<>();
                                         for (int i = 0; i<clothesIdList.size(); i++) {
-                                            PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i));
+                                            PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i), cards);
                                             data.add(bean);
                                         }
                                         String s = (new Gson()).toJson(data);
@@ -770,7 +772,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     private MultipartBody.Part getSpecialBodyType(String clothesIds) {
         //创建RequestBody，其中multipart/form-data为编码类型
         RequestBody request = RequestBody.create(MediaType.parse("multipart/form-data"), clothesIds);
-        return MultipartBody.Part.createFormData("clothes_ids[]", clothesIds);
+        return MultipartBody.Part.createFormData("card_nums", clothesIds);
     }
 
     private void showPopupWindow() {
@@ -1085,8 +1087,14 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
     //返回根据刷卡获取的成衣情况
     @Override
-    public void returnGetProductDetails(ProductDetails productDetails) {
+    public void returnGetProductDetails(ProductDetails productDetails,String num) {
         flag = true;
+        //防止重复添加同一张卡
+        for (String card : cards) {
+            if (card.equals(num)) {
+                haveCard = true;
+            }
+        }
         //防止重复添加同一件样衣
         for (String clothesIds : clothesIdList) {
             if (clothesIds.equals(productDetails.get_id())) {
@@ -1112,23 +1120,30 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 //        clothesIdBean.setClothes_ids(productDetails.get_id());
 //        clothesIdList.add(clothesIdBean);
             clothesIdList.add(productDetails.get_id());
+            cards.add(num);
         }else {
-
-            int counts = productDetailsList.get(clothesIdList.indexOf(productDetails.get_id())).getClothesIdCounts();
-            productDetailsList.get(clothesIdList.indexOf(productDetails.get_id())).setClothesIdCounts(counts+1);
-            productAdapter.notifyDataSetChanged();
-            ToastUtil.showShort("该样衣已在列表中"+clothesIdList.indexOf(productDetails.get_id()));
-            factPrice = factPrice + productDetails.getRetailPrice();
-            goodsTotalsFee.setText(String.valueOf(factPrice));
-            finalPrice = factPrice * associatorDiscount / 10;
-            receivable.setText(String.valueOf(finalPrice));
-            final_fact.setText(String.valueOf(finalPrice));
+            if (haveCard) {
+                ToastUtil.showShort("该卡绑定的样衣已经再列表中了");
+            }else {
+                int counts = productDetailsList.get(clothesIdList.indexOf(productDetails.get_id())).getClothesIdCounts();
+                productDetailsList.get(clothesIdList.indexOf(productDetails.get_id())).setClothesIdCounts(counts+1);
+                productAdapter.notifyDataSetChanged();
+                ToastUtil.showShort("该样衣已在列表中"+clothesIdList.indexOf(productDetails.get_id()));
+                factPrice = factPrice + productDetails.getRetailPrice();
+                goodsTotalsFee.setText(String.valueOf(factPrice));
+                finalPrice = factPrice * associatorDiscount / 10;
+                receivable.setText(String.valueOf(finalPrice));
+                final_fact.setText(String.valueOf(finalPrice));
+                cards.add(num);
+            }
         }
 
+        haveCard = false;
         haveClothesIds = false;
 
     }
 
+    //fixme 为了与卡号一对一，暂时删除了根据商品编号搜寻功能
     //返回根据商品编号获取的成衣情况
     @Override
     public void returnGetProductDetailsWithShop(ProductDetails productDetails) {

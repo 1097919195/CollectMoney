@@ -9,6 +9,15 @@ import java.util.List;
 public class PayOrderWithMultipartBean {
     private String id;
     private int count;
+    private List<String> card_nums;
+
+    public List<String> getCard_nums() {
+        return card_nums;
+    }
+
+    public void setCard_nums(List<String> card_nums) {
+        this.card_nums = card_nums;
+    }
 
     public String getId() {
         return id;
@@ -26,8 +35,9 @@ public class PayOrderWithMultipartBean {
         this.count = count;
     }
 
-    public PayOrderWithMultipartBean(String clothesIds, Integer clothesIdCount) {
+    public PayOrderWithMultipartBean(String clothesIds, Integer clothesIdCount, List<String> card_nums) {
         this.id = clothesIds;
         this.count = clothesIdCount;
+        this.card_nums = card_nums;
     }
 }

@@ -33,7 +33,7 @@ public interface MainContract {
     }
 
     interface View extends BaseView{
-        void returnGetProductDetails(ProductDetails productDetails);
+        void returnGetProductDetails(ProductDetails productDetails,String num);//返回刷过的卡的号码，为了去重
 
         void returnGetProductDetailsWithShop(ProductDetails productDetails);
 

@@ -10,6 +10,7 @@ import com.example.collect.collectmoneysystem.bean.ProductDetails;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.google.gson.Gson;
 import com.jaydenxiao.common.baserx.RxSchedulers;
+import com.jaydenxiao.common.commonutils.LogUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,8 +43,10 @@ public class MainModel implements MainContract.Model{
 
     @Override
     public Observable<OrderData> getProductOrder(String data) {
+        Map<String, RequestBody> map = new HashMap<>();
+        map.put("clothes", RequestBody.create(null, data));
         return Api.getDefault(HostType.QUALITY_DATA_NEW)
-                .productOrder(data)
+                .productOrder(map)
                 .map(new Api.HttpResponseFunc<>())
                 .compose(RxSchedulers.io_main());
     }
