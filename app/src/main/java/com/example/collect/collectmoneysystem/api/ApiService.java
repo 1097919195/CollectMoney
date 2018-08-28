@@ -2,6 +2,7 @@ package com.example.collect.collectmoneysystem.api;
 
 
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
+import com.example.collect.collectmoneysystem.bean.InventoryData;
 import com.example.collect.collectmoneysystem.bean.LoginTokenData;
 import com.example.collect.collectmoneysystem.bean.OrderData;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
@@ -143,6 +144,13 @@ public interface ApiService {
     Observable<HttpResponse> getPayResult(
             @Field("order_id") String orderId,
             @Field("auth_code") String auth_code
+    );
+
+    //对应样衣的库存查询
+    @FormUrlEncoded
+    @POST("api/shop/clothes/get_inventory")
+    Observable<HttpResponse<InventoryData>> getInventory(
+            @Field("clothes_num") String shop
     );
 
 }

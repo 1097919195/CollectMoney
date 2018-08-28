@@ -1,6 +1,7 @@
 package com.example.collect.collectmoneysystem.contract;
 
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
+import com.example.collect.collectmoneysystem.bean.InventoryData;
 import com.example.collect.collectmoneysystem.bean.OrderData;
 import com.example.collect.collectmoneysystem.bean.PayOrderWithMultipartBean;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
@@ -27,6 +28,8 @@ public interface MainContract {
         Observable<OrderData> getProductOrder(String data);
 
         Observable<HttpResponse> getPayResultInfo(String orderId, String code);
+
+        Observable<InventoryData> getInventoryAmounts(String shop);
     }
 
     interface View extends BaseView{
@@ -38,6 +41,8 @@ public interface MainContract {
         void returnGetProductOrder(OrderData orderData);
 
         void returnGetPayResultInfo(HttpResponse httpResponse);
+
+        void returnGetInventoryAmounts(InventoryData httpResponse);
     }
 
     abstract class Presenter extends BasePresenter<View, Model> {
@@ -49,5 +54,7 @@ public interface MainContract {
         public abstract void getProductOrderRequest(String data);
 
         public abstract void getPayResultInfoRequest(String orderId, String code);
+
+        public abstract void getInventoryAmountsRequest(String shop);
     }
 }

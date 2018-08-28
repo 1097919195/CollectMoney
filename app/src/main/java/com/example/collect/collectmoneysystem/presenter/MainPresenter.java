@@ -1,6 +1,7 @@
 package com.example.collect.collectmoneysystem.presenter;
 
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
+import com.example.collect.collectmoneysystem.bean.InventoryData;
 import com.example.collect.collectmoneysystem.bean.OrderData;
 import com.example.collect.collectmoneysystem.bean.PayOrderWithMultipartBean;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
@@ -93,6 +94,21 @@ public class MainPresenter extends MainContract.Presenter{
                 } else {
                     mView.showErrorTip(message);
                 }
+            }
+        }));
+    }
+
+    @Override
+    public void getInventoryAmountsRequest(String shop) {
+        mRxManage.add(mModel.getInventoryAmounts(shop).subscribeWith(new RxSubscriber2<InventoryData>(mContext, false) {
+            @Override
+            protected void _onNext(InventoryData inventoryData) {
+                mView.returnGetInventoryAmounts(inventoryData);
+            }
+
+            @Override
+            protected void _onError(String message) {
+                mView.showErrorTip(message);
             }
         }));
     }

@@ -29,8 +29,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -44,6 +46,7 @@ import com.example.collect.collectmoneysystem.app.AppApplication;
 import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.ClothesIdBean;
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
+import com.example.collect.collectmoneysystem.bean.InventoryData;
 import com.example.collect.collectmoneysystem.bean.OrderData;
 import com.example.collect.collectmoneysystem.bean.PayOrderWithMultipartBean;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
@@ -746,13 +749,11 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                     .title("库存查询")
                     .widgetColor(Color.BLUE)//输入框光标的颜色
                     //前2个一个是hint一个是预输入的文字
-                    .input("请输入商品名称或编号", "", new MaterialDialog.InputCallback() {
+                    .input("请输入商品编号", "", new MaterialDialog.InputCallback() {
                         @Override
                         public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                             if (input.toString().length() > 0) {
-                                mPresenter.getProductDetailsRequest(input.toString());
-                                //fixme 到时候需要更改提示位置在数据返回成功的时候提示
-                                showPopupWindow();
+                                mPresenter.getInventoryAmountsRequest(input.toString());
                             }else {
                                 ToastUtil.showShort("你还没有输入查询的内容呢");
                             }
@@ -1206,6 +1207,17 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         goodsTotalsFee.setText("");
         receivable.setText("");
         final_fact.setText("0.0");
+    }
+
+    //库存查询返回结果
+    @Override
+    public void returnGetInventoryAmounts(InventoryData inventoryData) {
+//        showPopupWindow();//如果要显示具体详情的话
+
+        Toast toast = Toast.makeText(this,
+                "当前门店剩下的库存数量："+String.valueOf(inventoryData.getInventory()), Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 
     @Override

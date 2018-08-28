@@ -3,6 +3,7 @@ package com.example.collect.collectmoneysystem.model;
 import com.example.collect.collectmoneysystem.api.Api;
 import com.example.collect.collectmoneysystem.api.HostType;
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
+import com.example.collect.collectmoneysystem.bean.InventoryData;
 import com.example.collect.collectmoneysystem.bean.OrderData;
 import com.example.collect.collectmoneysystem.bean.PayOrderWithMultipartBean;
 import com.example.collect.collectmoneysystem.bean.ProductDetails;
@@ -59,6 +60,14 @@ public class MainModel implements MainContract.Model{
     public Observable<HttpResponse> getPayResultInfo(String orderId, String code) {
         return Api.getDefault(HostType.QUALITY_DATA_NEW)
                 .getPayResult(orderId, code)
+                .compose(RxSchedulers.io_main());
+    }
+
+    @Override
+    public Observable<InventoryData> getInventoryAmounts(String shop) {
+        return Api.getDefault(HostType.QUALITY_DATA_NEW)
+                .getInventory(shop)
+                .map(new Api.HttpResponseFunc<>())
                 .compose(RxSchedulers.io_main());
     }
 }
