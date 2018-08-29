@@ -59,7 +59,6 @@ import com.example.collect.collectmoneysystem.presenter.MainPresenter;
 import com.example.collect.collectmoneysystem.utils.MaterialDialogUtils;
 import com.example.collect.collectmoneysystem.widget.SlideDelete;
 import com.example.collect.collectmoneysystem.widget.SlideDelete.OnSlideDeleteListener;
-import com.example.collect.collectmoneysystem.widget.SlideDeleteWith;
 import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jaydenxiao.common.base.BaseActivity;
@@ -182,12 +181,13 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     SerializableGroup group = new SerializableGroup();
     List<List<ProductDetails>> childList = new ArrayList<>();
     ArrayList<String> groupList = new ArrayList<>();
-    List<SlideDeleteWith> slideDeleteArrayList = new ArrayList<>();
+    List<SlideDelete> slideDeleteArrayList = new ArrayList<>();
     List<String> clothesIdList = new ArrayList<>();
     boolean haveClothesIds = false;
     boolean haveCard = false;
     List<Integer> clothesIdCount = new ArrayList<>();
-    List<String> cards = new ArrayList<>();
+    List<String> cardsList = new ArrayList<>();//记录刷过的卡
+    List<List<String>> clothesIdWithCards = new ArrayList<>();//记录对应clothesId刷过的卡
 
     private View pop;
     private Button btn_left;
@@ -306,9 +306,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                 TextView price = helper.getView(R.id.price);
                 ImageView img = helper.getView(R.id.sample_photo);
                 TextView delete = helper.getView(R.id.mTvDelete);
-                TextView minus = helper.getView(R.id.decrease);
-                TextView plus = helper.getView(R.id.increase);
-                SlideDeleteWith slideDelete = helper.getView(R.id.slideDelete);
+//                TextView minus = helper.getView(R.id.decrease);
+//                TextView plus = helper.getView(R.id.increase);
+                SlideDelete slideDelete = helper.getView(R.id.slideDelete);
 
                 part.setText(productDetails.getName());
                 spec.setText(String.valueOf(productDetails.getClothesIdCounts()));
@@ -339,53 +339,60 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                 final_fact.setText(String.valueOf(finalPrice));
 
                                 clothesIdList.remove(helper.getLayoutPosition());
+                                //清除clothesId下的所有卡
+                                for (String cards : clothesIdWithCards.get(helper.getLayoutPosition())) {
+                                    cardsList.remove(cardsList.indexOf(cards));
+                                }
+                                //清除clothesId下的所有卡
+                                clothesIdWithCards.remove(helper.getLayoutPosition());
+
                             })
                             .negativeColor(getResources().getColor(R.color.red))
                             .build();
                     delateDialog.show();
                 });
 
-                //商品加一
-                plus.setOnClickListener(v->{
-                    int counts = productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts();
-                    productDetailsList.get(helper.getLayoutPosition()).setClothesIdCounts(counts+1);
-                    productAdapter.notifyDataSetChanged();
-                    ToastUtil.showShort("该样衣已在列表中"+helper.getLayoutPosition());
-                    factPrice = factPrice + productDetails.getRetailPrice();
-                    goodsTotalsFee.setText(String.valueOf(factPrice));
-                    finalPrice = factPrice * associatorDiscount / 10;
-                    receivable.setText(String.valueOf(finalPrice));
-                    final_fact.setText(String.valueOf(finalPrice));
-                });
+//                //商品加一
+//                plus.setOnClickListener(v->{
+//                    int counts = productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts();
+//                    productDetailsList.get(helper.getLayoutPosition()).setClothesIdCounts(counts+1);
+//                    productAdapter.notifyDataSetChanged();
+//                    ToastUtil.showShort("该样衣已在列表中"+helper.getLayoutPosition());
+//                    factPrice = factPrice + productDetails.getRetailPrice();
+//                    goodsTotalsFee.setText(String.valueOf(factPrice));
+//                    finalPrice = factPrice * associatorDiscount / 10;
+//                    receivable.setText(String.valueOf(finalPrice));
+//                    final_fact.setText(String.valueOf(finalPrice));
+//                });
+//
+//                //商品减一
+//                minus.setOnClickListener(v->{
+//                    int counts = productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts();
+//                    productDetailsList.get(helper.getLayoutPosition()).setClothesIdCounts(counts-1);
+//                    if (productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts() < 1) {
+//                        productDetailsList.remove(helper.getLayoutPosition());
+//                        clothesIdList.remove(helper.getLayoutPosition());
+//                        goodsKindCounts.setText(String.valueOf(productDetailsList.size()));//加的时候不用管，减的时候需要
+//                    }
+//                    productAdapter.notifyDataSetChanged();
+//                    ToastUtil.showShort("该样衣已在列表中"+helper.getLayoutPosition());
+//                    factPrice = factPrice - productDetails.getRetailPrice();
+//                    goodsTotalsFee.setText(String.valueOf(factPrice));
+//                    finalPrice = factPrice * associatorDiscount / 10;
+//                    receivable.setText(String.valueOf(finalPrice));
+//                    final_fact.setText(String.valueOf(finalPrice));
+//                });
 
-                //商品减一
-                minus.setOnClickListener(v->{
-                    int counts = productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts();
-                    productDetailsList.get(helper.getLayoutPosition()).setClothesIdCounts(counts-1);
-                    if (productDetailsList.get(helper.getLayoutPosition()).getClothesIdCounts() < 1) {
-                        productDetailsList.remove(helper.getLayoutPosition());
-                        clothesIdList.remove(helper.getLayoutPosition());
-                        goodsKindCounts.setText(String.valueOf(productDetailsList.size()));//加的时候不用管，减的时候需要
-                    }
-                    productAdapter.notifyDataSetChanged();
-                    ToastUtil.showShort("该样衣已在列表中"+helper.getLayoutPosition());
-                    factPrice = factPrice - productDetails.getRetailPrice();
-                    goodsTotalsFee.setText(String.valueOf(factPrice));
-                    finalPrice = factPrice * associatorDiscount / 10;
-                    receivable.setText(String.valueOf(finalPrice));
-                    final_fact.setText(String.valueOf(finalPrice));
-                });
-
-                slideDelete.setOnSlideDeleteListener(new SlideDeleteWith.OnSlideDeleteListener() {
+                slideDelete.setOnSlideDeleteListener(new SlideDelete.OnSlideDeleteListener() {
                     @Override
-                    public void onOpen(SlideDeleteWith slideDelete) {
+                    public void onOpen(SlideDelete slideDelete) {
                         closeOtherItem();
                         slideDeleteArrayList.add(slideDelete);
                         slideDelete.isShowDelete(true);
                     }
 
                     @Override
-                    public void onClose(SlideDeleteWith slideDelete) {
+                    public void onClose(SlideDelete slideDelete) {
                         slideDeleteArrayList.remove(slideDelete);
                     }
                 });
@@ -440,9 +447,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
     private void closeOtherItem(){
         // 采用Iterator的原因是for是线程不安全的，迭代器是线程安全的
-        ListIterator<SlideDeleteWith> slideDeleteListIterator = slideDeleteArrayList.listIterator();
+        ListIterator<SlideDelete> slideDeleteListIterator = slideDeleteArrayList.listIterator();
         while(slideDeleteListIterator.hasNext()){
-            SlideDeleteWith slideDelete = slideDeleteListIterator.next();
+            SlideDelete slideDelete = slideDeleteListIterator.next();
             slideDelete.isShowDelete(false);
         }
         slideDeleteArrayList.clear();
@@ -488,7 +495,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
                                             List<PayOrderWithMultipartBean> data = new ArrayList<>();
                                             for (int i = 0; i<clothesIdList.size(); i++) {
-                                                PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i),cards);
+                                                PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i),clothesIdWithCards.get(i));
                                                 data.add(bean);
                                             }
                                             String s = (new Gson()).toJson(data);
@@ -527,7 +534,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
                                         List<PayOrderWithMultipartBean> data = new ArrayList<>();
                                         for (int i = 0; i<clothesIdList.size(); i++) {
-                                            PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i),cards);
+                                            PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i),clothesIdWithCards.get(i));
                                             data.add(bean);
                                         }
                                         String s = (new Gson()).toJson(data);
@@ -552,7 +559,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
                                         List<PayOrderWithMultipartBean> data = new ArrayList<>();
                                         for (int i = 0; i<clothesIdList.size(); i++) {
-                                            PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i), cards);
+                                            PayOrderWithMultipartBean bean = new PayOrderWithMultipartBean(clothesIdList.get(i), clothesIdCount.get(i), clothesIdWithCards.get(i));
                                             data.add(bean);
                                         }
                                         String s = (new Gson()).toJson(data);
@@ -605,6 +612,8 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                         receivable.setText("");
                         final_fact.setText("0.0");
                         clothesIdList.clear();
+                        clothesIdWithCards.clear();
+                        cardsList.clear();
                     })
                     .negativeColor(getResources().getColor(R.color.red))
                     .negativeText("点错了")
@@ -1089,16 +1098,16 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     @Override
     public void returnGetProductDetails(ProductDetails productDetails,String num) {
         flag = true;
-        //防止重复添加同一张卡
-        for (String card : cards) {
-            if (card.equals(num)) {
-                haveCard = true;
-            }
-        }
         //防止重复添加同一件样衣
         for (String clothesIds : clothesIdList) {
             if (clothesIds.equals(productDetails.get_id())) {
                 haveClothesIds = true;
+            }
+        }
+        //防止重复添加同一张卡
+        for (String card : cardsList) {
+            if (card.equals(num)) {
+                haveCard = true;
             }
         }
 
@@ -1120,7 +1129,11 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 //        clothesIdBean.setClothes_ids(productDetails.get_id());
 //        clothesIdList.add(clothesIdBean);
             clothesIdList.add(productDetails.get_id());
+            cardsList.add(num);
+            List<String> cards = new ArrayList<>();
             cards.add(num);
+            clothesIdWithCards.add(cards);
+//            clothesIdWithCards.get(clothesIdList.indexOf(productDetails.get_id())).add(num);
         }else {
             if (haveCard) {
                 ToastUtil.showShort("该卡绑定的样衣已经再列表中了");
@@ -1134,7 +1147,8 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                 finalPrice = factPrice * associatorDiscount / 10;
                 receivable.setText(String.valueOf(finalPrice));
                 final_fact.setText(String.valueOf(finalPrice));
-                cards.add(num);
+                cardsList.add(num);
+                clothesIdWithCards.get(clothesIdList.indexOf(productDetails.get_id())).add(num);
             }
         }
 
