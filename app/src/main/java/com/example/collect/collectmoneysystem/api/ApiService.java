@@ -1,6 +1,7 @@
 package com.example.collect.collectmoneysystem.api;
 
 
+import com.example.collect.collectmoneysystem.bean.CheckStoreData;
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.bean.InventoryData;
 import com.example.collect.collectmoneysystem.bean.LoginTokenData;
@@ -151,6 +152,13 @@ public interface ApiService {
     @POST("api/shop/clothes/get_inventory")
     Observable<HttpResponse<InventoryData>> getInventory(
             @Field("clothes_num") String shop
+    );
+
+    //对应样衣的库存查询
+    @FormUrlEncoded
+    @POST("api/shop/check")
+    Observable<HttpResponse<CheckStoreData>> getCheck(
+            @Field("card_nums") String cards
     );
 
 }

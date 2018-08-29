@@ -2,6 +2,7 @@ package com.example.collect.collectmoneysystem.model;
 
 import com.example.collect.collectmoneysystem.api.Api;
 import com.example.collect.collectmoneysystem.api.HostType;
+import com.example.collect.collectmoneysystem.bean.CheckStoreData;
 import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.bean.InventoryData;
 import com.example.collect.collectmoneysystem.bean.OrderData;
@@ -26,51 +27,11 @@ import okhttp3.RequestBody;
 
 public class MainModel implements MainContract.Model{
     @Override
-    public Observable<ProductDetails> getProductDetails(String num) {
+    public Observable<CheckStoreData> getInventory(String num) {
         return Api.getDefault(HostType.QUALITY_DATA_NEW)
-                .getProductDetails(num)
+                .getCheck(num)
                 .map(new Api.HttpResponseFunc<>())
                 .compose(RxSchedulers.io_main());
     }
 
-    @Override
-    public Observable<ProductDetails> getProductDetailsWithShop(String content) {
-        return Api.getDefault(HostType.QUALITY_DATA_NEW)
-                .getProductDetailsWithShop(content)
-                .map(new Api.HttpResponseFunc<>())
-                .compose(RxSchedulers.io_main());
-    }
-
-    @Override
-    public Observable<OrderData> getProductOrder(String data) {
-        Map<String, RequestBody> map = new HashMap<>();
-        map.put("clothes", RequestBody.create(null, data));
-        return Api.getDefault(HostType.QUALITY_DATA_NEW)
-                .productOrder(map)
-                .map(new Api.HttpResponseFunc<>())
-                .compose(RxSchedulers.io_main());
-    }
-
-//    @Override
-//    public Observable<OrderData> getProductOrder(MultipartBody.Part[] clothesId) {
-//        return Api.getDefault(HostType.QUALITY_DATA_NEW)
-//                .productOrder(clothesId)
-//                .map(new Api.HttpResponseFunc<>())
-//                .compose(RxSchedulers.io_main());
-//    }
-
-    @Override
-    public Observable<HttpResponse> getPayResultInfo(String orderId, String code) {
-        return Api.getDefault(HostType.QUALITY_DATA_NEW)
-                .getPayResult(orderId, code)
-                .compose(RxSchedulers.io_main());
-    }
-
-    @Override
-    public Observable<InventoryData> getInventoryAmounts(String shop) {
-        return Api.getDefault(HostType.QUALITY_DATA_NEW)
-                .getInventory(shop)
-                .map(new Api.HttpResponseFunc<>())
-                .compose(RxSchedulers.io_main());
-    }
 }
