@@ -1,89 +1,49 @@
 package com.example.collect.collectmoneysystem.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.aspsine.irecyclerview.IRecyclerView;
-import com.aspsine.irecyclerview.universaladapter.ViewHolderHelper;
-import com.aspsine.irecyclerview.universaladapter.recyclerview.CommonRecycleViewAdapter;
-import com.carlos.notificatoinbutton.library.NotificationButton;
 import com.example.collect.collectmoneysystem.R;
-import com.example.collect.collectmoneysystem.adapter.CalculatorAdapter;
 import com.example.collect.collectmoneysystem.app.AppApplication;
 import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.CheckStoreData;
-import com.example.collect.collectmoneysystem.bean.ClothesIdBean;
-import com.example.collect.collectmoneysystem.bean.HttpResponse;
-import com.example.collect.collectmoneysystem.bean.InventoryData;
-import com.example.collect.collectmoneysystem.bean.OrderData;
-import com.example.collect.collectmoneysystem.bean.PayOrderWithMultipartBean;
-import com.example.collect.collectmoneysystem.bean.ProductDetails;
-import com.example.collect.collectmoneysystem.bean.SerializableChild;
-import com.example.collect.collectmoneysystem.bean.SerializableGroup;
-import com.example.collect.collectmoneysystem.camera.CaptureActivity;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.example.collect.collectmoneysystem.model.MainModel;
 import com.example.collect.collectmoneysystem.presenter.MainPresenter;
-import com.example.collect.collectmoneysystem.utils.MaterialDialogUtils;
-import com.example.collect.collectmoneysystem.widget.SlideDelete;
-import com.example.collect.collectmoneysystem.widget.SlideDelete.OnSlideDeleteListener;
 import com.google.gson.Gson;
-import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jaydenxiao.common.base.BaseActivity;
 import com.jaydenxiao.common.base.BasePopupWindow;
 import com.jaydenxiao.common.baseapp.AppManager;
-import com.jaydenxiao.common.commonutils.ACache;
-import com.jaydenxiao.common.commonutils.ImageLoaderUtils;
 import com.jaydenxiao.common.commonutils.LogUtils;
 import com.jaydenxiao.common.commonutils.SPUtils;
 import com.jaydenxiao.common.commonutils.ToastUtil;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import cc.lotuscard.ILotusCallBack;
 import cc.lotuscard.LotusCardDriver;
 import cc.lotuscard.LotusCardParam;
-import io.reactivex.functions.Consumer;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -116,7 +76,11 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
     @BindView(R.id.commit)
     Button commit;
+    @BindView(R.id.rl_main)
+    RelativeLayout rl_main;
     private List<String> cards = new ArrayList<>();
+    private View pop;
+    private BasePopupWindow popupWindow;
 
 
     public static void startAction(Activity activity) {
@@ -153,6 +117,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         cardDeviceChecked();
         initHandleCardDetails();
         initListener();
+        initPopup();
     }
 
     private void initListener() {
@@ -416,9 +381,38 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     }
 
     //盘点返回
+    @SuppressLint("StringFormatMatches")
     @Override
     public void returnGetInventory(CheckStoreData checkStoreData, String num) {
-        ToastUtil.showShort(checkStoreData.get_id());
+        if (checkStoreData != null) {
+            TextView actual = pop.findViewById(R.id.actual_count);
+            TextView clothesCards = pop.findViewById(R.id.clothes_card_count);
+            TextView otherCards = pop.findViewById(R.id.other_card_count);
+            Button btn = pop.findViewById(R.id.btn);
+
+            actual.setText(getString(R.string.actual_count, checkStoreData.getActual_count(),0));
+            clothesCards.setText(getString(R.string.clothes_card_count, checkStoreData.getClothes_card_count(),0));
+            otherCards.setText(getString(R.string.other_card_count, checkStoreData.getOther_card_count(),0));
+
+            btn.setOnClickListener(v->popupWindow.dismiss());
+            showPopupWindow();
+        }
+    }
+
+    private void initPopup() {
+        pop = LayoutInflater.from(this).inflate(R.layout.pop_inventroy, null);
+    }
+
+    private void showPopupWindow() {
+        popupWindow = new BasePopupWindow(this);
+//        popupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        popupWindow.setWidth(400);
+        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+//        popupWindow.setHeight(400);
+        popupWindow.setContentView(pop);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.red)));
+        popupWindow.showAtLocation(rl_main, Gravity.CENTER, 0, 0);
+        popupWindow.setAnimationStyle(R.style.MyPopWindow_anim_style);//好像起不了作用
     }
 
     @Override

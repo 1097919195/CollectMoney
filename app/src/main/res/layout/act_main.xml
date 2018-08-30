@@ -3,14 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/gxkj_logo"
+    android:id="@+id/rl_main"
     >
 
     <Button
         android:id="@+id/commit"
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:textSize="30sp"
-        android:text="盘点"/>
-
+        android:text="盘点"
+        android:background="@drawable/inventory_btn"/>
 
 </RelativeLayout>
