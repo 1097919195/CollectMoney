@@ -34,4 +34,19 @@ public class MainPresenter extends MainContract.Presenter{
         }));
 
     }
+
+    @Override
+    public void bindingRequest(String cardNum, String clotheNum) {
+        mRxManage.add(mModel.binding(cardNum,clotheNum).subscribeWith(new RxSubscriber2<HttpResponse>(mContext, true) {
+            @Override
+            protected void _onNext(HttpResponse httpResponse) {
+                mView.returnBinding(httpResponse);
+            }
+
+            @Override
+            protected void _onError(String message) {
+                mView.showErrorTip(message);
+            }
+        }));
+    }
 }

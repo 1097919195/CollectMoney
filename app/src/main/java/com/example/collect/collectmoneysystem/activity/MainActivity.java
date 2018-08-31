@@ -11,6 +11,7 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -21,10 +22,12 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.collect.collectmoneysystem.R;
 import com.example.collect.collectmoneysystem.app.AppApplication;
 import com.example.collect.collectmoneysystem.app.AppConstant;
 import com.example.collect.collectmoneysystem.bean.CheckStoreData;
+import com.example.collect.collectmoneysystem.bean.HttpResponse;
 import com.example.collect.collectmoneysystem.contract.MainContract;
 import com.example.collect.collectmoneysystem.model.MainModel;
 import com.example.collect.collectmoneysystem.presenter.MainPresenter;
@@ -76,6 +79,8 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
     @BindView(R.id.commit)
     Button commit;
+    @BindView(R.id.bind)
+    Button bind;
     @BindView(R.id.rl_main)
     RelativeLayout rl_main;
     private List<String> cards = new ArrayList<>();
@@ -124,12 +129,36 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         commit.setOnClickListener(v -> {
             String data = (new Gson()).toJson(cards);
             LogUtils.loge(data);
-            if (cards.size()>0){
+            if (cards.size() > 0) {
                 mPresenter.getInventoryRequest(data);
                 cards.clear();
-            }else {
+            } else {
                 ToastUtil.showShort("请先刷要盘点的卡！");
             }
+        });
+
+        bind.setOnClickListener(v -> {
+            new MaterialDialog.Builder(this)
+                    .title("售后的样衣重绑定")
+                    .input("请输入样衣编号", "", new MaterialDialog.InputCallback() {
+                        @Override
+                        public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                            LogUtils.loge("输入的是：" + input);
+                            if (input.toString().length() == 0) {
+                                ToastUtil.showShort("请先输入样衣编号");
+                            } else {
+                                if (cards != null && cards.size() > 0) {
+                                    mPresenter.bindingRequest(cards.get(cards.size() - 1), input.toString());
+                                    cards.clear();
+                                } else {
+                                    ToastUtil.showShort("请先刷卡");
+                                }
+                            }
+                        }
+                    })
+                    .negativeText("取消")
+                    .positiveColor(getResources().getColor(R.color.main_blue))
+                    .show();
         });
     }
 
@@ -390,12 +419,20 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
             TextView otherCards = pop.findViewById(R.id.other_card_count);
             Button btn = pop.findViewById(R.id.btn);
 
-            actual.setText(getString(R.string.actual_count, checkStoreData.getActual_count(),0));
-            clothesCards.setText(getString(R.string.clothes_card_count, checkStoreData.getClothes_card_count(),0));
-            otherCards.setText(getString(R.string.other_card_count, checkStoreData.getOther_card_count(),0));
+            actual.setText(getString(R.string.actual_count, checkStoreData.getActual_count(), 0));
+            clothesCards.setText(getString(R.string.clothes_card_count, checkStoreData.getClothes_card_count(), 0));
+            otherCards.setText(getString(R.string.other_card_count, checkStoreData.getOther_card_count(), 0));
 
-            btn.setOnClickListener(v->popupWindow.dismiss());
+            btn.setOnClickListener(v -> popupWindow.dismiss());
             showPopupWindow();
+        }
+    }
+
+    //返回卡号和衣服重新绑定
+    @Override
+    public void returnBinding(HttpResponse httpResponse) {
+        if (httpResponse.getSuccess()) {
+            ToastUtil.showShort("绑定成功!");
         }
     }
 
@@ -429,7 +466,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     public void showErrorTip(String msg) {
         //用户信息的token过期时
         if (msg == "token过期") {
-            SPUtils.setSharedStringData(AppApplication.getAppContext(),AppConstant.TOKEN,"");
+            SPUtils.setSharedStringData(AppApplication.getAppContext(), AppConstant.TOKEN, "");
             AppManager.getAppManager().finishAllActivity();
             Intent intent = new Intent(MainActivity.this, AccountActivity.class);
             startActivity(intent);

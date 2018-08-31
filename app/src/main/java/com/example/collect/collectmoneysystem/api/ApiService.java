@@ -161,4 +161,12 @@ public interface ApiService {
             @Field("card_nums") String cards
     );
 
+    //根据衣服编号绑定衣服和卡
+    @FormUrlEncoded
+    @POST("api/shop/clothes/rebind_card")
+    Observable<HttpResponse> binding(
+            @Field("card_num") String cardNum,
+            @Field("clothes_num") String clotheNum
+    );
+
 }

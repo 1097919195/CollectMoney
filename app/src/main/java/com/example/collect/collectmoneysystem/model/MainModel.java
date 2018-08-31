@@ -34,4 +34,11 @@ public class MainModel implements MainContract.Model{
                 .compose(RxSchedulers.io_main());
     }
 
+    @Override
+    public Observable<HttpResponse> binding(String cardNum, String clotheNum) {
+        return Api.getDefault(HostType.QUALITY_DATA_NEW)
+                .binding(cardNum,clotheNum)
+                .compose(RxSchedulers.io_main());
+    }
+
 }

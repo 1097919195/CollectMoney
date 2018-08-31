@@ -6,14 +6,37 @@
     android:background="@mipmap/gxkj_logo"
     android:id="@+id/rl_main"
     >
+    <TextView
+        android:padding="30dp"
+        android:gravity="center"
+        android:textSize="45sp"
+        android:textColor="@color/black"
+        android:text="@string/app_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/commit"
+    <LinearLayout
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:textSize="30sp"
-        android:text="盘点"
-        android:background="@drawable/inventory_btn"/>
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/bind"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:textSize="30sp"
+            android:text="绑卡"
+            android:background="@drawable/inventory_btn"/>
+        <Button
+            android:id="@+id/commit"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:textSize="30sp"
+            android:text="盘点"
+            android:background="@drawable/inventory_btn"/>
+    </LinearLayout>
+
 
 </RelativeLayout>

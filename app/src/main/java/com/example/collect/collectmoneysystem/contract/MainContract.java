@@ -22,14 +22,20 @@ import okhttp3.MultipartBody;
 public interface MainContract {
     interface Model extends BaseModel {
         Observable<CheckStoreData> getInventory(String num);
+
+        Observable<HttpResponse> binding(String cardNum, String clotheNum);
     }
 
     interface View extends BaseView{
         void returnGetInventory(CheckStoreData checkStoreData, String num);
 
+        void returnBinding(HttpResponse httpResponse);
+
     }
 
     abstract class Presenter extends BasePresenter<View, Model> {
         public abstract void getInventoryRequest(String num);
+
+        public abstract void bindingRequest(String cardNum, String clotheNum);
     }
 }
