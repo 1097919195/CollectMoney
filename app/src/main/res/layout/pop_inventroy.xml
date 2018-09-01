@@ -13,7 +13,7 @@
             android:id="@+id/actual_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="总共需要盘点的卡数"
+            android:text="总共还需盘点的卡数"
             android:textSize="@dimen/font_large"/>
 
         <TextView

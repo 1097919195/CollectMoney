@@ -21,7 +21,7 @@ public class CheckStoreData {
      * _id : 5b8656579134ca3108010d76
      */
 
-    private int actual_count;//总共需要盘点的数量
+    private int actual_count;//总共还需盘点的数量
     private int clothes_card_count;//有效卡的数量
     private int other_card_count;//无效卡的数量
     private List<String> diff;//还需要盘点的卡
