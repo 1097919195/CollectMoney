@@ -1236,6 +1236,9 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
         goodsTotalsFee.setText("");
         receivable.setText("");
         final_fact.setText("0.0");
+
+        clothesIdWithCards.clear();
+        cardsList.clear();
     }
 
     //库存查询返回结果
