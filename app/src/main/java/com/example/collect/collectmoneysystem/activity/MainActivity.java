@@ -185,7 +185,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     List<String> clothesIdList = new ArrayList<>();
     boolean haveClothesIds = false;
     boolean haveCard = false;
-    List<Integer> clothesIdCount = new ArrayList<>();
+    List<Integer> clothesIdCount = new ArrayList<>();//同种样衣的数量
     List<String> cardsList = new ArrayList<>();//记录刷过的卡
     List<List<String>> clothesIdWithCards = new ArrayList<>();//记录对应clothesId刷过的卡
 
@@ -345,7 +345,6 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                                 }
                                 //清除clothesId下的所有卡
                                 clothesIdWithCards.remove(helper.getLayoutPosition());
-
                             })
                             .negativeColor(getResources().getColor(R.color.red))
                             .build();
@@ -611,6 +610,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
                         goodsTotalsFee.setText("");
                         receivable.setText("");
                         final_fact.setText("0.0");
+                        clothesIdCount.clear();
                         clothesIdList.clear();
                         clothesIdWithCards.clear();
                         cardsList.clear();
@@ -1217,8 +1217,10 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
             mPresenter.getPayResultInfoRequest(AppConstant.ORDER_ID, AppConstant.AUTH_CODE);
             AppConstant.AUTH_CODE = "";
             getAmount.setText("0");
+            clothesIdCount.clear();
         }else {
             ToastUtil.showShort("下单失败了");
+            clothesIdCount.clear();
         }
     }
 
@@ -1264,6 +1266,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
     @Override
     public void showErrorTip(String msg) {
+        clothesIdCount.clear();//保证对应样衣的数量不会出问题，每次提交支付的时候重新add
         flag = true;
         //用户信息的token过期时
         if (msg == "token过期") {
