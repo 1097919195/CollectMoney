@@ -21,4 +21,10 @@
         <!-- 指定消失的动画xml -->
     </style>
 
+    //冷启动优化
+    <style name="AppWelcome.wallpaper" parent="AppTheme">//有背景无沉浸状态栏
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@mipmap/company_logo2</item>
+    </style>
+
 </resources>
