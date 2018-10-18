@@ -13,4 +13,10 @@
         <item name="colorControlActivated">@color/white</item>
     </style>
 
+    //冷启动优化
+    <style name="AppWelcome.wallpaper" parent="AppTheme">//有背景无沉浸状态栏
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@mipmap/company_logo2</item>
+    </style>
+
 </resources>
