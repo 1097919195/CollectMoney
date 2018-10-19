@@ -202,6 +202,14 @@ public class SlideDelete extends ViewGroup{
         //    computeScroll判断模拟数据是否彻底完成，还没完成会再次调用invalidate
         // 3、递归调用，知道数据noni完成。
     }
+
+    //分别调用ViewDragHelper的shouldInterceptTouchEvent与processTouchEvent来简化手势的操作判断。将手势操作全部交由ViewDragHelper来实现。
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event)
+    {
+        return viewDragHelper.shouldInterceptTouchEvent(event);
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         //return super.onTouchEvent(event);
@@ -210,6 +218,7 @@ public class SlideDelete extends ViewGroup{
         viewDragHelper.processTouchEvent(event); // 使用ViewDragHelper必须复写onTouchEvent并调用这个方法
         return true; //消费这个touch
     }
+
     // SlideDlete的接口
     public interface OnSlideDeleteListener {
         void onOpen(SlideDelete slideDelete);
