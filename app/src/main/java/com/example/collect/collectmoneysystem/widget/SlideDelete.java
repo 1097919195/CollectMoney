@@ -111,6 +111,7 @@ public class SlideDelete extends ViewGroup{
             }
             return left;
         }
+        // 返回水平和垂直方向可移动的范围(指子view的范围)
         @Override
         public int clampViewPositionVertical(View child, int top, int dy) {
             return super.clampViewPositionVertical(child, top, dy);
