@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.jaydenxiao.common.commonutils.LogUtils;
+
 /**
  * Created by Administrator on 2018/6/8 0008.
  */
@@ -19,6 +21,7 @@ public class SlideDelete extends ViewGroup{
     private int mContentHeight;
     private int mDeleteWidth;
     private int mDeleteHeight;
+    private boolean isShow = false;
     public SlideDelete(Context context) {
         super(context);
     }
@@ -152,18 +155,25 @@ public class SlideDelete extends ViewGroup{
             //super.onViewReleased(releasedChild, xvel, yvel);
             // 方法的参数里面没有left，那么我们就采用 getLeft()这个方法
             int mConLeft = mContent.getLeft();
-            // 这里没必要分来两个孩子判断
-            if(-mConLeft>mDeleteWidth/2){  // mDelete展示起来
-                isShowDelete(true);
-                if(onSlideDeleteListener != null){
-                    onSlideDeleteListener.onOpen(SlideDelete.this); // 调用接口打开的方法
+
+            if (!isShow) {
+                if (-mConLeft > 0) {// mDelete展示起来
+                    isShowDelete(true);
+                    isShow = true;
+                    if (onSlideDeleteListener != null) {
+                        onSlideDeleteListener.onOpen(SlideDelete.this); // 调用接口打开的方法
+                    }
                 }
-            }else{    // mDetele隐藏起来
-                isShowDelete(false);
-                if(onSlideDeleteListener != null){
-                    onSlideDeleteListener.onClose(SlideDelete.this); // 调用接口的关闭的方法
+            }else {
+                if (-mConLeft < mDeleteWidth) {// mDelete关闭
+                    isShowDelete(false);
+                    isShow = false;
+                    if (onSlideDeleteListener != null) {
+                        onSlideDeleteListener.onClose(SlideDelete.this); // 调用接口打开的方法
+                    }
                 }
             }
+
             super.onViewReleased(releasedChild, xvel, yvel);
         }
     }
