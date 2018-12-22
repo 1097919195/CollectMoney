@@ -106,7 +106,7 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("api/shop/login")
     Observable<HttpResponse<LoginTokenData>> getTokenWithSignIn(
-            @Field("mobile") String username,
+            @Field("username") String username,
             @Field("password") String password
     );
 
