@@ -208,7 +208,7 @@
     <string name="input_qrcode">输入编号</string>
     <string name="next_quality">保存质检结果</string>
 
-    <string name="actual_count">总共还需盘点的卡数:%1$d</string>
-    <string name="clothes_card_count">有效的样衣卡数:%1$d</string>
-    <string name="other_card_count">无效的卡数:%1$d</string>
+    <string name="actual_count">店内样衣总数:%1$d</string>
+    <string name="clothes_card_count">盘点到的样衣数量:%1$d</string>
+    <string name="other_card_count">总共盘点卡的数量:%1$d</string>
 </resources>

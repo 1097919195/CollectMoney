@@ -41,6 +41,7 @@ import com.jaydenxiao.common.commonutils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import butterknife.BindView;
@@ -86,6 +87,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
     private List<String> cards = new ArrayList<>();
     private View pop;
     private BasePopupWindow popupWindow;
+    int validCards = 0;
 
 
     public static void startAction(Activity activity) {
@@ -126,9 +128,11 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
     private void initListener() {
         commit.setOnClickListener(v -> {
+
             String data = (new Gson()).toJson(cards);
             LogUtils.loge(data);
             if (cards.size() > 0) {
+                validCards = getValidCards();//这次盘点刷的有效卡数
                 mPresenter.getInventoryRequest(data);
                 cards.clear();
             } else {
@@ -420,11 +424,17 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
             actual.setText(getString(R.string.actual_count, checkStoreData.getActual_count(), 0));
             clothesCards.setText(getString(R.string.clothes_card_count, checkStoreData.getClothes_card_count(), 0));
-            otherCards.setText(getString(R.string.other_card_count, checkStoreData.getOther_card_count(), 0));
+            otherCards.setText(getString(R.string.other_card_count, validCards, 0));
 
             btn.setOnClickListener(v -> popupWindow.dismiss());
             showPopupWindow();
         }
+    }
+
+    //去重
+    private int getValidCards() {
+        List newCard = new ArrayList(new HashSet(cards));
+        return newCard.size();
     }
 
     //返回卡号和衣服重新绑定
