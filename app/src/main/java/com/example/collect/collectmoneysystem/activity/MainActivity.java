@@ -433,7 +433,7 @@ public class MainActivity extends BaseActivity<MainPresenter, MainModel> impleme
 
     //去重
     private int getValidCards() {
-        List newCard = new ArrayList(new HashSet(cards));
+        List newCard = new ArrayList(new HashSet(cards));//改成Treeset就可以去重并且按照自然顺序排列
         return newCard.size();
     }
 
